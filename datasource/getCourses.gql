@@ -1,0 +1,64 @@
+query getCourses($query: String, $perPage: Int!, $page: Int!) {
+  coursesConnection(
+    basic: $query
+    perPage: $perPage
+    page: $page
+    semesterRange: {
+      start: { termName: FALL, termYear: 2018 }
+      end: { termName: SPRING, termYear: 2030 }
+    }
+  ) {
+    totalCount
+    nodes {
+      academicGroup
+      academicGroupDescription
+      academicYear
+      catalogNumber
+      classAcademicOrgDescription
+      classSection
+      component
+      componentFiltered
+      courseDescription
+      courseDescriptionLong
+      courseInstructors {
+        displayName
+        email
+        firstName
+        id
+        instructorRole
+        lastName
+        middleName
+      }
+      courseLevel
+      courseMeetingPatterns {
+        id
+        meetingTimeStartTod
+        meetingTimeEndTod
+        startDate
+        endDate
+        meetsOnMonday
+        meetsOnTuesday
+        meetsOnWednesday
+        meetsOnThursday
+        meetsOnFriday
+        meetsOnSaturday
+        meetsOnSunday
+      }
+      createdAt
+      externalCourseId
+      id
+      qGuideCourseId
+      semester
+      subject
+      subjectAcademicOrgDescription
+      subjectDescription
+      termCode
+      termName
+      termPatternDescription
+      termYear
+      title
+      unitsMaximum
+      updatedAt
+    }
+  }
+}

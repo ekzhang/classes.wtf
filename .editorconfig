@@ -1,0 +1,12 @@
+[*]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.go]
+tab_width = 4
+indent_style = tab
+
+[*.{js,jsx,ts,tsx,html,css,svelte,gql}]
+tab_width = 2
+indent_style = space
