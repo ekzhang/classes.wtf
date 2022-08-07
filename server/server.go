@@ -25,11 +25,15 @@ func Run(uri string, local bool) {
 	var proc *exec.Cmd
 	if local {
 		proc = exec.Command("docker", "run", "-i",
-			"--rm", "-p", "7501:6379", "redis/redis-stack:latest")
+			"--rm", "-p", "7501:6379", "redis/redis-stack-server:latest")
 	} else {
-		proc = exec.Command("redis-stack-server",
-			"--port", "7501", "--save", "", "--dbfilename", "")
+		proc = exec.Command("redis-server",
+			"--loadmodule", "/opt/redis-stack/lib/redisearch.so",
+			"--loadmodule", "/opt/redis-stack/lib/rejson.so",
+			"--port", "7501", "--save", "")
 	}
+	proc.Stdout = os.Stdout
+	proc.Stderr = os.Stderr
 
 	if err := proc.Start(); err != nil {
 		log.Fatalf("failed to start redis: %v", err)
