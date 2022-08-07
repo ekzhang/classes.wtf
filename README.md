@@ -8,7 +8,7 @@ Harvard's has many course search websites, but they are slow and tend to return 
 
 **Classes.wtf** implements a globally distributed custom search engine written in [Go](https://go.dev/), built on an in-memory [Redis](https://redis.io/) database that runs as a subprocess of the application. This supports full-text fuzzy and prefix search on all fields, along with a rich query syntax.
 
-The frontend is a static website built with [Svelte](https://svelte.dev/), and it sends search queries immediately after every keystroke. The goal is for the entire request, computation, response, and render pipeline to take under 20 milliseconds.
+The frontend is a static website built with [Svelte](https://svelte.dev/), and it sends search queries immediately after every keystroke. The goal is for the entire request, computation, response, and render pipeline to take under 30 milliseconds.
 
 Observant readers will notice that the speed of light is not fast enough for data to travel around the world at this latency. This is okay though. We run multiple replicas at geographically distributed locations using [Fly.io](https://fly.io/) and route requests to the nearest one. Each replica runs its own full-text query engine, so they are completely independent.
 
