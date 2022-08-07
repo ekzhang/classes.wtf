@@ -2,8 +2,7 @@ package datasource
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
+	"log"
 	"os"
 	"sort"
 	"strconv"
@@ -11,16 +10,16 @@ import (
 	"github.com/schollz/progressbar/v3"
 )
 
-func DownloadCourses() error {
+func DownloadCourses() {
 	const maxPerPage = 64
 
 	data, err := GetCourses(nil, 0, 1)
 	if err != nil {
-		return fmt.Errorf("failed to get courses: %v", err)
+		log.Fatalf("failed to get courses: %v", err)
 	}
 	totalCount := data.TotalCount
 	if totalCount == 0 {
-		return errors.New("no courses found")
+		log.Fatalf("no courses found")
 	}
 
 	bar := progressbar.Default(totalCount)
@@ -43,7 +42,7 @@ func DownloadCourses() error {
 		if err != nil {
 			if perPage == 1 {
 				// skipping this document: had an error :(
-				fmt.Printf("  -> skipping document %v due to %v\n", start, err)
+				log.Printf("  -> skipping document %v due to %v\n", start, err)
 				bar.Add(1)
 				end = start
 			} else {
@@ -62,12 +61,10 @@ func DownloadCourses() error {
 		return id1 < id2
 	})
 
-	fmt.Printf("read %v out of %v total courses\n", len(courses), totalCount)
+	log.Printf("read %v out of %v total courses\n", len(courses), totalCount)
 
 	coursesText, _ := json.Marshal(courses)
 	if err := os.WriteFile("data/courses.json", coursesText, 0644); err != nil {
-		return fmt.Errorf("failed to write courses.json: %v", err)
+		log.Fatalf("failed to write courses.json: %v", err)
 	}
-
-	return nil
 }

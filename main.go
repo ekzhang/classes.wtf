@@ -1,25 +1,33 @@
 package main
 
 import (
-	"fmt"
+	"flag"
+	"log"
 	"os"
 
 	"classes.wtf/datasource"
+	"classes.wtf/server"
 )
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("expected to be called with a subcommand")
-		os.Exit(1)
+		log.Fatal("expected to be called with a subcommand")
 	}
+
+	serverCmd := flag.NewFlagSet("server", flag.ExitOnError)
+	serverData := serverCmd.String("data", "", "path or url for the data file")
+	serverLocal := serverCmd.Bool("local", false, "set to use local mode")
 
 	switch os.Args[1] {
 	case "download":
-		if err := datasource.DownloadCourses(); err != nil {
-			panic(err)
+		datasource.DownloadCourses()
+	case "server":
+		serverCmd.Parse(os.Args[2:])
+		if *serverData == "" {
+			log.Fatal("server requires a -data file")
 		}
+		server.Run(*serverData, *serverLocal)
 	default:
-		fmt.Println("unexpected subcommand")
-		os.Exit(1)
+		log.Fatal("unexpected subcommand")
 	}
 }
