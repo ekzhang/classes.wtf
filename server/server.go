@@ -9,9 +9,11 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path"
 	"strings"
 	"time"
 
+	"github.com/NYTimes/gziphandler"
 	"github.com/antelman107/net-wait-go/wait"
 	"github.com/go-redis/redis/v8"
 )
@@ -108,7 +110,7 @@ func (ts *TextSearch) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // Run spawns the backend server. This listens on port 7500 for HTTP requests,
 // and it also creates an in-memory Redis instance in the background at port
 // 7501 for text search.
-func Run(uri string, local bool) {
+func Run(uri string, static string, local bool) {
 
 	log.Printf("Starting Redis server...")
 	var proc *exec.Cmd
@@ -156,6 +158,18 @@ func Run(uri string, local bool) {
 
 	log.Printf("Listening at http://localhost:7500")
 	http.Handle("/search", ts)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/" && static != "" {
+			http.ServeFile(w, r, path.Join(static, "index.html"))
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+		}
+	})
+	if static != "" {
+		staticFiles := gziphandler.GzipHandler(
+			http.FileServer(http.Dir(path.Join(static, "assets"))))
+		http.Handle("/assets/", http.StripPrefix("/assets", staticFiles))
+	}
 	log.Fatal(http.ListenAndServe(":7500", nil))
 }
 

@@ -3,6 +3,7 @@ module classes.wtf
 go 1.18
 
 require (
+	github.com/NYTimes/gziphandler v1.1.1
 	github.com/antelman107/net-wait-go v0.0.0-20220211074630-12d8a944b87d
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/schollz/progressbar/v3 v3.9.0

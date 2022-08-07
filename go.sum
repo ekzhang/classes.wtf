@@ -1,3 +1,5 @@
+github.com/NYTimes/gziphandler v1.1.1 h1:ZUDjpQae29j0ryrS0u/B8HZfJBtBQHjqw2rQ2cqUQ3I=
+github.com/NYTimes/gziphandler v1.1.1/go.mod h1:n/CVRwUEOgIxrgPvAQhUUr9oeUtvrhMomdKFjzJNB0c=
 github.com/antelman107/net-wait-go v0.0.0-20220211074630-12d8a944b87d h1:W/DlgbaUy+TYYjR2wWYkLhBbM1siBlkebM8hszeGHzI=
 github.com/antelman107/net-wait-go v0.0.0-20220211074630-12d8a944b87d/go.mod h1:+tQQjzrp2501Nd6JXrb9s/XsNvFK3ZbxOnCdQl/vDRo=
 github.com/cespare/xxhash/v2 v2.1.2 h1:YRXhKfTDauu4ajMg1TPgFO5jnlC2HCbmLXMcTG5cbYE=

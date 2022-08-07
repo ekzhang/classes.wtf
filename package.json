@@ -1,0 +1,27 @@
+{
+  "name": "classes.wtf",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig frontend/tsconfig.json",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "svelte": "^3.49.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^1.0.1",
+    "@tsconfig/svelte": "^3.0.0",
+    "prettier": "2.7.1",
+    "prettier-plugin-svelte": "2.7.0",
+    "svelte-check": "^2.8.0",
+    "svelte-preprocess": "^4.10.7",
+    "tslib": "^2.4.0",
+    "typescript": "^4.6.4",
+    "vite": "^3.0.0"
+  }
+}
