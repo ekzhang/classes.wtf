@@ -1,18 +1,18 @@
 # [classes.wtf](https://classes.wtf/)
 
-_A course catalog with full-text search so fast, your eyes won't even be able to perceive it._
+_A course catalog with full-text search that's so fast, you can't even perceive any delay._
 
-Made because I was tired of Harvard's multitude of slow class search websites that also have poor quality. Write high-performance software and set good defaults so that you can serve better, more salient results, 100x faster.
+I made this because I was tired of Harvard's collection of class search websites that are slow and return poor quality results. Write high-performance software and set good defaults so that you can serve better, more salient results, 100x faster.
 
 ## WTF: How does it work?
 
-**Classes.wtf** runs a globally distributed server written in [Go](https://go.dev/), along with a custom search engine built on an in-memory [Redis](https://redis.io/) database that runs as a subprocess of the application. This supports full-text fuzzy and prefix search on all fields, along with a rich query syntax.
+**Classes.wtf** implements a globally distributed custom search engine written in [Go](https://go.dev/), built on an in-memory [Redis](https://redis.io/) database that runs as a subprocess of the application. This supports full-text fuzzy and prefix search on all fields, along with a rich query syntax.
 
-We have a fast, performant static website built with [Svelte](https://svelte.dev/) that sends search requests to the backend every time you press a key. Because the results come back so fast, in under 20 milliseconds, you can't even perceive the delay.
+The frontend is a static website built with [Svelte](https://svelte.dev/), and it sends search queries immediately after every keystroke. The goal is for the entire request, computation, response, and render pipeline to take under 20 milliseconds.
 
 Observant readers will notice that the speed of light is not fast enough for data to travel around the world at this latency. This is okay though. We run multiple replicas at geographically distributed locations using [Fly.io](https://fly.io/) and route requests to the nearest one. Each replica runs its own full-text query engine, so they are completely independent.
 
-(The nearest replica to Cambridge, MA lives in Secaucus, NJ, only 200 miles away.)
+(The nearest server replica to Cambridge, MA lives in Secaucus, NJ, only 200 miles away.)
 
 ### FAQ
 
@@ -58,7 +58,7 @@ Visit `localhost:5173` to see the website.
 ### Building a container
 
 ```bash
-docker build -t classes.wtf --platform linux/amd64 .
+docker build -t classes.wtf .
 ```
 
 ### Deployment
