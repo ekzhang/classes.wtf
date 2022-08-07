@@ -3,6 +3,7 @@ query getCourses($query: String, $perPage: Int!, $page: Int!) {
     basic: $query
     perPage: $perPage
     page: $page
+    courseLevels: [NOLEVEL, PRIMUGRD, UGRDGRAD, PRIMGRAD] # skip 300-level
     semesterRange: {
       start: { termName: FALL, termYear: 2018 }
       end: { termName: SPRING, termYear: 2030 }
