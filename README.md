@@ -2,7 +2,7 @@
 
 _A course catalog with full-text search that's so fast, you can't even perceive any delay._
 
-I made this because I was tired of Harvard's collection of class search websites that are slow and return poor quality results. Write high-performance software and set good defaults so that you can serve better, more salient results, 100x faster.
+Harvard's has many course search websites, but they are slow and tend to return poor quality results. This project is an attempt to take the problem seriously: write high-performance software and set good defaults so that people can get better, more salient suggestions, 100x faster.
 
 ## WTF: How does it work?
 
@@ -59,6 +59,7 @@ Visit `localhost:5173` to see the website.
 
 ```bash
 docker build -t classes.wtf .
+docker run -it --rm -p 7500:7500 classes.wtf
 ```
 
 ### Deployment
