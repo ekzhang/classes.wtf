@@ -10,26 +10,31 @@ query getCourses($query: String, $perPage: Int!, $page: Int!) {
   ) {
     totalCount
     nodes {
-      academicGroup
-      academicGroupDescription
-      academicYear
+      id
+      externalCourseId
+      qGuideCourseId
+      title
+      subject
+      subjectDescription
       catalogNumber
-      classAcademicOrgDescription
+      courseLevel
+      academicGroup
+      semester
+      academicYear
       classSection
       component
       componentFiltered
       courseDescription
       courseDescriptionLong
       courseInstructors {
+        id
         displayName
         email
-        firstName
-        id
         instructorRole
-        lastName
+        firstName
         middleName
+        lastName
       }
-      courseLevel
       courseMeetingPatterns {
         id
         meetingTimeStartTod
@@ -44,21 +49,8 @@ query getCourses($query: String, $perPage: Int!, $page: Int!) {
         meetsOnSaturday
         meetsOnSunday
       }
-      createdAt
-      externalCourseId
-      id
-      qGuideCourseId
-      semester
-      subject
-      subjectAcademicOrgDescription
-      subjectDescription
       termCode
-      termName
-      termPatternDescription
-      termYear
-      title
       unitsMaximum
-      updatedAt
     }
   }
 }

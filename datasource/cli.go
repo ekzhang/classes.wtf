@@ -1,45 +1,66 @@
 package datasource
 
 import (
-	_ "embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
+	"sort"
+	"strconv"
 
 	"github.com/schollz/progressbar/v3"
 )
 
 func DownloadCourses() error {
-	const perPage = 50
-	const retries = 5
+	const maxPerPage = 64
 
 	data, err := GetCourses(nil, 0, 1)
 	if err != nil {
 		return fmt.Errorf("failed to get courses: %v", err)
 	}
-
 	totalCount := data.TotalCount
-	pages := (totalCount + perPage - 1) / perPage
+	if totalCount == 0 {
+		return errors.New("no courses found")
+	}
+
+	bar := progressbar.Default(totalCount)
+	var indices []int
+	for i := 0; i < int(totalCount); i += maxPerPage {
+		indices = append(indices, i)
+	}
 
 	var courses []map[string]interface{}
-	bar := progressbar.Default(int64(pages))
-	for page := 1; page <= pages; page++ {
-		data = nil
-		for i := 0; i < retries; i++ {
-			data, err = GetCourses(nil, perPage, page)
-			if err != nil {
-				fmt.Printf("retrying page %v, attempt %v/%v\n", page, i+1, retries)
-				continue
-			}
-			break
+	end := indices[len(indices)-1] + maxPerPage // this is >= totalCount
+	for len(indices) > 0 {
+		start := indices[len(indices)-1]
+		indices = indices[0 : len(indices)-1]
+		perPage := end - start
+		if start%perPage != 0 {
+			panic("invariant violated: start / perPage")
 		}
-		if data == nil {
-			fmt.Printf("failed to get courses for page %v: %v\n", page, err)
+		page := start/perPage + 1
+		data, err := GetCourses(nil, perPage, page)
+		if err != nil {
+			if perPage == 1 {
+				// skipping this document: had an error :(
+				fmt.Printf("  -> skipping document %v due to %v\n", start, err)
+				bar.Add(1)
+				end = start
+			} else {
+				indices = append(indices, start, start+perPage/2)
+			}
 		} else {
 			courses = append(courses, data.Courses...)
+			bar.Add(len(data.Courses))
+			end = start
 		}
-		bar.Add(1)
 	}
+
+	sort.Slice(courses, func(i, j int) bool {
+		id1, _ := strconv.Atoi(courses[i]["id"].(string))
+		id2, _ := strconv.Atoi(courses[j]["id"].(string))
+		return id1 < id2
+	})
 
 	fmt.Printf("read %v out of %v total courses\n", len(courses), totalCount)
 

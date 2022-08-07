@@ -2,12 +2,11 @@ package datasource
 
 import (
 	"bytes"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-
-	_ "embed"
 )
 
 const endpoint = "https://curricle.berkman.harvard.edu/graphql"
@@ -28,7 +27,7 @@ type GqlResponse struct {
 }
 
 type CourseData struct {
-	TotalCount int                      `json:"totalCount"`
+	TotalCount int64                    `json:"totalCount"`
 	Courses    []map[string]interface{} `json:"nodes"`
 }
 
