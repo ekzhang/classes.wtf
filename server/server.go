@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/antelman107/net-wait-go/wait"
@@ -21,11 +20,12 @@ type Course map[string]interface{}
 
 // Provides access to a populated text search index.
 type TextSearch struct {
-	ctx context.Context
-	rdb *redis.Client
+	ctx  context.Context
+	rdb  *redis.Client
+	vals map[string]Course
 }
 
-func (ts *TextSearch) init(data []Course) (map[string]Course, error) {
+func (ts *TextSearch) init(data []Course) error {
 	ts.rdb.Do(ts.ctx,
 		"FT.CREATE", "courses", "ON", "JSON", "PREFIX", "1", "course:", "SCHEMA",
 		"$.title", "AS", "title", "TEXT",
@@ -41,23 +41,23 @@ func (ts *TextSearch) init(data []Course) (map[string]Course, error) {
 	)
 
 	pipe := ts.rdb.Pipeline()
-	vals := make(map[string]Course)
+	ts.vals = make(map[string]Course)
 	for i, course := range data {
 		id := course["id"].(string)
 		s, err := json.Marshal(course)
 		if err != nil {
-			return nil, fmt.Errorf("failed to marshal course id %v: %v", id, err)
+			return fmt.Errorf("failed to marshal course id %v: %v", id, err)
 		}
-		vals["course:"+id] = course
+		ts.vals["course:"+id] = course
 		pipe.Do(ts.ctx, "JSON.SET", "course:"+id, "$", s)
 		if i%4000 == 3999 || i == len(data)-1 {
 			if _, err := pipe.Exec(ts.ctx); err != nil {
-				return nil, fmt.Errorf("error while adding data: %v", err)
+				return fmt.Errorf("error while adding data: %v", err)
 			}
 			pipe = ts.rdb.Pipeline()
 		}
 	}
-	return vals, nil
+	return nil
 }
 
 // Execute a full text query on the Redis server, using the query language.
@@ -79,6 +79,32 @@ func (ts *TextSearch) search(query string) (count int64, results []string, err e
 	return
 }
 
+func (ts *TextSearch) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("q")
+	start := time.Now()
+	count, results, err := ts.search(query)
+	elapsed := time.Since(start)
+	log.Printf("Queried %q in %v", query, elapsed)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"error": err.Error(),
+		})
+		return
+	}
+	var courses []Course
+	for _, id := range results {
+		courses = append(courses, ts.vals[id])
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"count":   count,
+		"courses": courses,
+		"time":    elapsed.Seconds(),
+	})
+}
+
 // Run spawns the backend server. This listens on port 7500 for HTTP requests,
 // and it also creates an in-memory Redis instance in the background at port
 // 7501 for text search.
@@ -87,8 +113,10 @@ func Run(uri string, local bool) {
 	log.Printf("Starting Redis server...")
 	var proc *exec.Cmd
 	if local {
-		proc = exec.Command("docker", "run", "-i",
-			"--rm", "-p", "7501:6379", "redis/redis-stack-server:latest")
+		exec.Command("docker", "kill", "classes.wtf-redis").Run()
+		proc = exec.Command("docker", "run", "--name", "classes.wtf-redis",
+			"-i", "--rm", "-p", "7501:6379", "redis/redis-stack-server:latest",
+			"redis-stack-server", "--save", "")
 	} else {
 		proc = exec.Command("redis-server",
 			"--loadmodule", "/opt/redis-stack/lib/redisearch.so",
@@ -101,7 +129,6 @@ func Run(uri string, local bool) {
 	if err := proc.Start(); err != nil {
 		log.Fatalf("failed to start redis: %v", err)
 	}
-	defer proc.Process.Signal(syscall.SIGTERM)
 
 	if !wait.New().Do([]string{"localhost:7501"}) {
 		log.Fatalf("failed to connect to redis")
@@ -118,28 +145,18 @@ func Run(uri string, local bool) {
 	defer cancel()
 
 	rdb := redis.NewClient(&redis.Options{Addr: "localhost:7501"})
-	ts := &TextSearch{ctx, rdb}
+	ts := &TextSearch{ctx, rdb, nil}
 
 	log.Printf("Indexing course data...")
 	start := time.Now()
-	vals, err := ts.init(data)
-	if err != nil {
+	if err := ts.init(data); err != nil {
 		log.Fatalf("faild to index data: %v", err)
 	}
 	log.Printf("Finished indexing data in %v", time.Since(start))
 
-	start = time.Now()
-	count, results, err := ts.search("GENED lives")
-	if err != nil {
-		log.Fatalf("search failed: %v", err)
-	}
-
-	log.Printf("Search results (%v): %v", time.Since(start), count)
-	for _, id := range results {
-		course := vals[id]
-		log.Printf("  - %v %v: %v (%v)", course["subject"], course["catalogNumber"],
-			course["title"], course["semester"])
-	}
+	log.Printf("Listening at http://localhost:7500")
+	http.Handle("/search", ts)
+	log.Fatal(http.ListenAndServe(":7500", nil))
 }
 
 func readData(uri string) (data []Course, err error) {

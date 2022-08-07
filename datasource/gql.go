@@ -5,7 +5,6 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 )
 
@@ -59,9 +58,8 @@ func GetCourses(keywords *string, perPage, page int) (*CourseData, error) {
 		return nil, fmt.Errorf("graphql request had bad status code: %v", resp.Status)
 	}
 
-	body, _ := io.ReadAll(resp.Body)
 	gqlResp := GqlResponse{}
-	if err := json.Unmarshal(body, &gqlResp); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&gqlResp); err != nil {
 		return nil, fmt.Errorf("could not unmarshal response body: %v", err)
 	}
 	return &gqlResp.Data.CoursesConnection, nil
