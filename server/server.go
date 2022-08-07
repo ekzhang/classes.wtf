@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -15,6 +16,68 @@ import (
 	"github.com/antelman107/net-wait-go/wait"
 	"github.com/go-redis/redis/v8"
 )
+
+type Course map[string]interface{}
+
+// Provides access to a populated text search index.
+type TextSearch struct {
+	ctx context.Context
+	rdb *redis.Client
+}
+
+func (ts *TextSearch) init(data []Course) (map[string]Course, error) {
+	ts.rdb.Do(ts.ctx,
+		"FT.CREATE", "courses", "ON", "JSON", "PREFIX", "1", "course:", "SCHEMA",
+		"$.title", "AS", "title", "TEXT",
+		"$.courseDescription", "AS", "tagline", "TEXT",
+		"$.courseDescriptionLong", "AS", "description", "TEXT",
+		"$.subject", "AS", "subject", "TEXT",
+		"$.catalogNumber", "AS", "number", "TEXT",
+		"$.semester", "AS", "semester", "TEXT",
+		"$.courseInstructors.*.displayName", "AS", "instructor", "TEXT",
+		"$.componentFiltered", "AS", "component", "TAG",
+		"$.courseLevel", "AS", "level", "TAG",
+		"$.academicGroup", "AS", "group", "TAG",
+	)
+
+	pipe := ts.rdb.Pipeline()
+	vals := make(map[string]Course)
+	for i, course := range data {
+		id := course["id"].(string)
+		s, err := json.Marshal(course)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal course id %v: %v", id, err)
+		}
+		vals["course:"+id] = course
+		pipe.Do(ts.ctx, "JSON.SET", "course:"+id, "$", s)
+		if i%4000 == 3999 || i == len(data)-1 {
+			if _, err := pipe.Exec(ts.ctx); err != nil {
+				return nil, fmt.Errorf("error while adding data: %v", err)
+			}
+			pipe = ts.rdb.Pipeline()
+		}
+	}
+	return vals, nil
+}
+
+// Execute a full text query on the Redis server, using the query language.
+//
+// This function returns the total number of results in the query set, as well
+// as a slice of the first 100 document IDs.
+func (ts *TextSearch) search(query string) (count int64, results []string, err error) {
+	val, err := ts.rdb.Do(ts.ctx,
+		"FT.SEARCH", "courses", query,
+		"RETURN", "0", "LIMIT", "0", "100",
+	).Slice()
+	if err != nil {
+		return
+	}
+	count = val[0].(int64)
+	for _, id := range val[1:] {
+		results = append(results, id.(string))
+	}
+	return
+}
 
 // Run spawns the backend server. This listens on port 7500 for HTTP requests,
 // and it also creates an in-memory Redis instance in the background at port
@@ -55,44 +118,18 @@ func Run(uri string, local bool) {
 	defer cancel()
 
 	rdb := redis.NewClient(&redis.Options{Addr: "localhost:7501"})
+	ts := &TextSearch{ctx, rdb}
 
 	log.Printf("Indexing course data...")
 	start := time.Now()
-	rdb.Do(ctx,
-		"FT.CREATE", "courses", "ON", "JSON", "PREFIX", "1", "course:", "SCHEMA",
-		"$.title", "AS", "title", "TEXT",
-		"$.courseDescription", "AS", "tagline", "TEXT",
-		"$.courseDescriptionLong", "AS", "description", "TEXT",
-		"$.subject", "AS", "subject", "TEXT",
-		"$.catalogNumber", "AS", "number", "TEXT",
-		"$.semester", "AS", "semester", "TEXT",
-		"$.courseInstructors.*.displayName", "AS", "instructor", "TEXT",
-		"$.componentFiltered", "AS", "component", "TAG",
-		"$.courseLevel", "AS", "level", "TAG",
-		"$.academicGroup", "AS", "group", "TAG",
-	)
-
-	pipe := rdb.Pipeline()
-	vals := make(map[string]map[string]interface{})
-	for i, course := range data {
-		id := course["id"].(string)
-		s, err := json.Marshal(course)
-		if err != nil {
-			log.Fatalf("failed to marshal course id %v: %v", id, err)
-		}
-		vals["course:"+id] = course
-		pipe.Do(ctx, "JSON.SET", "course:"+id, "$", s)
-		if i%4000 == 3999 || i == len(data)-1 {
-			if _, err := pipe.Exec(ctx); err != nil {
-				log.Fatalf("error while indexing data: %v", err)
-			}
-			pipe = rdb.Pipeline()
-		}
+	vals, err := ts.init(data)
+	if err != nil {
+		log.Fatalf("faild to index data: %v", err)
 	}
 	log.Printf("Finished indexing data in %v", time.Since(start))
 
 	start = time.Now()
-	count, results, err := runSearch(ctx, rdb, "GENED love")
+	count, results, err := ts.search("GENED lives")
 	if err != nil {
 		log.Fatalf("search failed: %v", err)
 	}
@@ -105,30 +142,7 @@ func Run(uri string, local bool) {
 	}
 }
 
-// Execute a full text query on the Redis server, using the query language.
-//
-// This function returns the total number of results in the query set, as well
-// as a slice of the first 100 document IDs.
-func runSearch(
-	ctx context.Context,
-	rdb *redis.Client,
-	query string,
-) (count int64, results []string, err error) {
-	val, err := rdb.Do(ctx,
-		"FT.SEARCH", "courses", query,
-		"RETURN", "0", "LIMIT", "0", "100",
-	).Slice()
-	if err != nil {
-		return
-	}
-	count = val[0].(int64)
-	for _, id := range val[1:] {
-		results = append(results, id.(string))
-	}
-	return
-}
-
-func readData(uri string) (data []map[string]interface{}, err error) {
+func readData(uri string) (data []Course, err error) {
 	var buf []byte
 	if strings.HasPrefix(uri, "http://") || strings.HasPrefix(uri, "https://") {
 		resp, err := http.Get(uri)
