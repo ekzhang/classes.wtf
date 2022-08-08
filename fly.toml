@@ -8,6 +8,9 @@ processes = []
   allowed_public_ports = []
   auto_rollback = true
 
+[env]
+  SWAP = "1"
+
 [[services]]
   internal_port = 7500
   processes = ["app"]
