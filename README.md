@@ -1,8 +1,8 @@
 # [classes.wtf](https://classes.wtf/)
 
-_I just want to take a class about **\[X\]** but searching the online catalog is way too slow, and my results are irrelevant. WTF?_
+_I just want to take a class about **\[X\]** but searching the online catalog is way too slow, and my results are largely irrelevant. WTF?_
 
-![](https://i.imgur.com/wh7dd8h.png)
+![](https://i.imgur.com/UMBZDKU.png)
 
 Harvard has many course search websites, but none of them are good. This project is an attempt to take the problem more seriously: write high-performance software and set great defaults so that people can get better, more useful suggestions, 100x faster.
 
