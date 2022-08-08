@@ -29,8 +29,9 @@
   </p>
 
   {#if $error !== null}
-    <p class="text-red-500">Error: {$error}</p>
-  {:else if $courses}
+    <p class="text-red-500 mb-4">Error: {$error}</p>
+  {/if}
+  {#if $courses}
     <p class="mb-4">received {$count} result(s)</p>
 
     <div class="space-y-4">
