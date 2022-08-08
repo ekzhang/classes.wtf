@@ -1,20 +1,42 @@
 <script lang="ts">
-  import Counter from "./lib/Counter.svelte";
+  import Course from "./lib/Course.svelte";
+  import { createSearcher, normalizeText } from "./lib/search";
+
+  let query: string = "";
+
+  const { count, courses, error, search } = createSearcher();
+  $: search(normalizeText(query));
+  $: console.log(normalizeText(query));
 </script>
 
-<h1 class="text-2xl font-bold">Sorry, we're not ready yet!</h1>
+<main class="p-4">
+  <h1 class="text-4xl font-bold mb-4">
+    classes.<span class="text-violet-500">wtf</span>
+  </h1>
 
-<p>
-  Only the ⚡️-fast API is available (here's <a
-    href="/search?q=art+history"
-    class="text-blue-600 hover:underline">an example</a
-  >). I promise I'm making a sweet interface though. :)
-</p>
+  <p class="font-bold">Sorry, we're not ready yet!</p>
+  <p>I promise I'm working on a sweet interface though. :)</p>
 
-<Counter />
+  <hr class="my-8" />
 
-<style lang="postcss">
-  h1 {
-    @apply hover:underline;
-  }
-</style>
+  <p>
+    I just want to take a class about
+    <input
+      class="border-b border-gray-400 focus:outline-none"
+      bind:value={query}
+    /> but searching the online catalog is so slow, and my results are largely irrelevant.
+    WTF?
+  </p>
+
+  {#if $error !== null}
+    <p class="text-red-500">Error: {$error}</p>
+  {:else if $courses}
+    <p class="mb-4">received {$count} result(s)</p>
+
+    <div class="space-y-4">
+      {#each $courses as course (course.id)}
+        <Course data={course} />
+      {/each}
+    </div>
+  {/if}
+</main>

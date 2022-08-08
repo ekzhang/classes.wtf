@@ -1,6 +1,6 @@
 # [classes.wtf](https://classes.wtf/)
 
-_I just want to take a class about **\[X\]** but searching the online catalog is way too slow, and my results are largely irrelevant. WTF?_
+_I just want to take a class about **\[X\]** but searching the online catalog is so slow, and my results are largely irrelevant. WTF?_
 
 ![](https://i.imgur.com/UMBZDKU.png)
 
