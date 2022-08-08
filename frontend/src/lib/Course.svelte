@@ -2,6 +2,12 @@
   import type { CourseData } from "./search";
 
   export let data: CourseData;
+
+  const levelCodes = {
+    PRIMUGRD: "Introductory",
+    UGRDGRAD: "Undergrad",
+    PRIMGRAD: "Graduate",
+  };
 </script>
 
 <div>
@@ -18,7 +24,7 @@
     {/each}
   </p>
   <p class="text-xs font-light mb-1">
-    {data.academicGroup} | {data.courseLevel} | {data.componentFiltered}
+    {data.academicGroup} | {levelCodes[data.courseLevel] ?? data.courseLevel} | {data.componentFiltered}
   </p>
   <div class="text-xs">
     {@html data.courseDescriptionLong
