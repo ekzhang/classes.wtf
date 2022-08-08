@@ -2,7 +2,21 @@
   import Course from "./lib/Course.svelte";
   import { createSearcher, normalizeText } from "./lib/search";
 
-  let query: string = "";
+  function encodeQueryHash(query: string): string {
+    return "#" + encodeURIComponent(query).replaceAll("%20", "+");
+  }
+
+  function decodeQueryHash(hash: string): string {
+    return decodeURIComponent(hash.slice(1).replaceAll("+", "%20"));
+  }
+
+  let query: string = location.hash ? decodeQueryHash(location.hash) : "";
+  $: {
+    const newUrl = query
+      ? encodeQueryHash(query)
+      : location.pathname + location.search;
+    history.replaceState(null, "", newUrl);
+  }
 
   const { data, error, search } = createSearcher();
   $: search(normalizeText(query));
