@@ -157,7 +157,7 @@ func Run(uri string, static string, local bool) {
 	log.Printf("Finished indexing data in %v", time.Since(start))
 
 	log.Printf("Listening at http://localhost:7500")
-	http.Handle("/search", ts)
+	http.Handle("/search", gziphandler.GzipHandler(ts))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" && static != "" {
 			http.ServeFile(w, r, path.Join(static, "index.html"))
