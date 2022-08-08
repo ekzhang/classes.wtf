@@ -36,7 +36,12 @@ func (ts *TextSearch) init(data []Course) error {
 		"$.subject", "AS", "subject", "TEXT",
 		"$.catalogNumber", "AS", "number", "TEXT",
 		"$.semester", "AS", "semester", "TEXT",
-		"$.courseInstructors.*.displayName", "AS", "instructor", "TEXT",
+		// HACK: Replace with a multi-field `$.courseInstructors..displayName`
+		// index after https://github.com/RediSearch/RediSearch/pull/2819 is
+		// released (likely in RediSearch 2.5).
+		"$.courseInstructors[0].displayName", "AS", "instructor", "TEXT",
+		"$.courseInstructors[1].displayName", "AS", "instructor2", "TEXT",
+		"$.courseInstructors[2].displayName", "AS", "instructor3", "TEXT",
 		"$.componentFiltered", "AS", "component", "TAG",
 		"$.courseLevel", "AS", "level", "TAG",
 		"$.academicGroup", "AS", "group", "TAG",
