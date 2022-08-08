@@ -45,8 +45,7 @@ export type CourseData = {
 };
 
 export type Searcher = {
-  count: Readable<number>;
-  courses: Readable<CourseData[] | undefined>;
+  data: Readable<any>;
   error: Readable<string | null>;
   search: (query: string) => void;
 };
@@ -55,8 +54,7 @@ export function createSearcher(): Searcher {
   let abort: AbortController | null = null;
   let lastQuery: string | null = null;
 
-  const count = writable(0);
-  const courses = writable<any[] | undefined>(undefined);
+  const data = writable<any>(undefined);
   const error = writable<string | null>(null);
   const search = async (query: string) => {
     if (query === lastQuery) return;
@@ -69,12 +67,11 @@ export function createSearcher(): Searcher {
         signal: abort.signal,
       });
       if (!resp.ok) {
-        const data = await resp.json();
-        error.set(data.error);
+        const obj = await resp.json();
+        error.set(obj.error);
       } else {
-        const data = await resp.json();
-        count.set(data.count);
-        courses.set(data.courses);
+        const obj = await resp.json();
+        data.set(obj);
         error.set(null);
       }
     } catch (err) {
@@ -85,7 +82,7 @@ export function createSearcher(): Searcher {
     }
   };
 
-  return { count, courses, error, search };
+  return { data, error, search };
 }
 
 /** Apply some transformations to a query to make it more useful by default. */

@@ -4,9 +4,8 @@
 
   let query: string = "";
 
-  const { count, courses, error, search } = createSearcher();
+  const { data, error, search } = createSearcher();
   $: search(normalizeText(query));
-  $: console.log(normalizeText(query));
 </script>
 
 <main class="p-4">
@@ -19,7 +18,7 @@
 
   <hr class="my-8" />
 
-  <p>
+  <p class="mb-4">
     I just want to take a class about
     <input
       class="border-b border-gray-400 focus:outline-none"
@@ -29,13 +28,18 @@
   </p>
 
   {#if $error !== null}
-    <p class="text-red-500 mb-4">Error: {$error}</p>
+    <p class="text-red-500 mb-4">
+      Error searching for <code>{normalizeText(query)}</code>: {$error}
+    </p>
   {/if}
-  {#if $courses}
-    <p class="mb-4">received {$count} result(s)</p>
+  {#if query && $data}
+    <p class="mb-4">
+      Found {$data.count} results
+      <span class="text-gray-500">({($data.time * 1000).toFixed(2)} ms)</span>
+    </p>
 
     <div class="space-y-4">
-      {#each $courses as course (course.id)}
+      {#each $data.courses ?? [] as course (course.id)}
         <Course data={course} />
       {/each}
     </div>
