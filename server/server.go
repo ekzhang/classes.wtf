@@ -29,19 +29,20 @@ type TextSearch struct {
 
 func (ts *TextSearch) init(data []Course) error {
 	ts.rdb.Do(ts.ctx,
-		"FT.CREATE", "courses", "ON", "JSON", "PREFIX", "1", "course:", "SCHEMA",
-		"$.title", "AS", "title", "TEXT",
+		"FT.CREATE", "courses", "ON", "JSON", "PREFIX", "1", "course:", "NOOFFSETS",
+		"SCHEMA",
+		"$.title", "AS", "title", "TEXT", "WEIGHT", "2",
 		"$.courseDescription", "AS", "tagline", "TEXT",
 		"$.courseDescriptionLong", "AS", "description", "TEXT",
-		"$.subject", "AS", "subject", "TEXT",
-		"$.catalogNumber", "AS", "number", "TEXT",
+		"$.subject", "AS", "subject", "TEXT", "NOSTEM", "WEIGHT", "2",
+		"$.catalogNumber", "AS", "number", "TEXT", "NOSTEM", "WEIGHT", "2",
 		"$.semester", "AS", "semester", "TEXT",
 		// HACK: Replace with a multi-field `$.courseInstructors..displayName`
 		// index after https://github.com/RediSearch/RediSearch/pull/2819 is
 		// released (likely in RediSearch 2.5).
-		"$.courseInstructors[0].displayName", "AS", "instructor", "TEXT",
-		"$.courseInstructors[1].displayName", "AS", "instructor2", "TEXT",
-		"$.courseInstructors[2].displayName", "AS", "instructor3", "TEXT",
+		"$.courseInstructors[0].displayName", "AS", "instructor", "TEXT", "NOSTEM", "PHONETIC", "dm:en",
+		"$.courseInstructors[1].displayName", "AS", "instructor2", "TEXT", "NOSTEM", "PHONETIC", "dm:en",
+		"$.courseInstructors[2].displayName", "AS", "instructor3", "TEXT", "NOSTEM", "PHONETIC", "dm:en",
 		"$.componentFiltered", "AS", "component", "TAG",
 		"$.courseLevel", "AS", "level", "TAG",
 		"$.academicGroup", "AS", "group", "TAG",
