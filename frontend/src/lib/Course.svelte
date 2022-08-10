@@ -33,7 +33,7 @@
     return schedules.join(", ");
   }
 
-  $: console.log(data);
+  $: [season, year] = data.semester.split(" ");
 </script>
 
 <div>
@@ -53,9 +53,37 @@
     {data.academicGroup} | {levelCodes[data.courseLevel] ?? data.courseLevel} | {data.componentFiltered}
     | {meetingString(data)}
   </p>
-  <div class="text-xs">
+  <div class="text-xs mb-1">
     {@html data.courseDescriptionLong
       .replaceAll("&nbsp;", "\xa0")
       .replaceAll(/<p>\s*<\/p>/g, "")}
   </div>
+  <div class="ext-links flex space-x-2">
+    <a
+      target="_blank"
+      rel="noopener noreferrer"
+      href={data.qGuideCourseId
+        ? `https://course-evaluation-reports.fas.harvard.edu/fas/course_summary.html?course_id=${data.qGuideCourseId}`
+        : `https://qreports.fas.harvard.edu/home/courses?school=FAS&search=${data.subject}+${data.catalogNumber}`}
+      >Q Guide</a
+    >
+    <a
+      target="_blank"
+      rel="noopener noreferrer"
+      href="https://syllabus.harvard.edu/?course_id={data.externalCourseId}"
+      >Syllabus</a
+    >
+    <a
+      target="_blank"
+      rel="noopener noreferrer"
+      href="https://locator.tlt.harvard.edu/course/colgsas-{data.externalCourseId}/{year}/{season}"
+      >Website</a
+    >
+  </div>
 </div>
+
+<style lang="postcss">
+  .ext-links a {
+    @apply text-gray-500 text-sm underline hover:text-black;
+  }
+</style>
