@@ -117,7 +117,6 @@ func (ts *TextSearch) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // and it also creates an in-memory Redis instance in the background at port
 // 7501 for text search.
 func Run(uri string, static string, local bool) {
-
 	log.Printf("Starting Redis server...")
 	var proc *exec.Cmd
 	if local {
