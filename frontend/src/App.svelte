@@ -27,49 +27,53 @@
 </script>
 
 <main class="px-4 py-8 max-w-screen-md mx-auto" class:landing>
-  <h1 class="text-4xl font-bold mb-4">
-    <a href="/" on:click|preventDefault={() => ((query = ""), (landing = true))}
-      >classes.<span class="text-violet-500">wtf</span></a
-    >
-  </h1>
+  <div class="landing-card">
+    <h1 class="text-4xl font-bold mb-4">
+      <a
+        href="/"
+        on:click|preventDefault={() => ((query = ""), (landing = true))}
+        >classes.<span class="text-violet-500">wtf</span></a
+      >
+    </h1>
 
-  {#if !landing}
-    <p class="mb-3 text-sm text-zinc-600">
-      Try single words, phrases, titles, subjects, course numbers, and
-      instructor names. You can find "exact phrases" and prefix* matches. Filter
-      by specific fields like @instructor:mickens or @subject:compsci.
+    {#if !landing}
+      <p class="mb-3 text-sm text-zinc-600">
+        Try words, phrases, titles, subjects, course numbers, and instructor
+        names. You can also look for "exact phrases" and prefix* matches. Filter
+        by specific fields like @instructor:mickens or @subject:compsci.
+      </p>
+    {/if}
+
+    <p class="mb-4 text-xl">
+      <span class="flavor">I just want to take a class about </span>
+      <!-- svelte-ignore a11y-autofocus -->
+      <span class="relative input-wrapper"
+        >{#if !landing}
+          <svg
+            class="w-5 h-5 absolute top-0 left-3 text-gray-400 pointer-events-none"
+            fill="currentColor"
+            viewBox="0 0 50 50"
+            ><path
+              d="M 21 3 C 11.601563 3 4 10.601563 4 20 C 4 29.398438 11.601563 37 21 37 C 24.355469 37 27.460938 36.015625 30.09375 34.34375 L 42.375 46.625 L 46.625 42.375 L 34.5 30.28125 C 36.679688 27.421875 38 23.878906 38 20 C 38 10.601563 30.398438 3 21 3 Z M 21 7 C 28.199219 7 34 12.800781 34 20 C 34 27.199219 28.199219 33 21 33 C 13.800781 33 8 27.199219 8 20 C 8 12.800781 13.800781 7 21 7 Z"
+            /></svg
+          >
+        {/if}<input
+          autofocus
+          class="border-b border-gray-500 bg-gray-50 hover:bg-gray-100 focus:outline-none"
+          placeholder={landing ? "" : "Search…"}
+          bind:value={query}
+        /></span
+      >
+      <span class="flavor">
+        but searching the online catalog is so slow, and my results are largely
+        irrelevant. WTF?</span
+      >
     </p>
-  {/if}
 
-  <p class="mb-4 text-xl">
-    <span class="flavor">I just want to take a class about </span>
-    <!-- svelte-ignore a11y-autofocus -->
-    <span class="relative input-wrapper"
-      >{#if !landing}
-        <svg
-          class="w-5 h-5 absolute top-0 left-3 text-gray-400 pointer-events-none"
-          fill="currentColor"
-          viewBox="0 0 50 50"
-          ><path
-            d="M 21 3 C 11.601563 3 4 10.601563 4 20 C 4 29.398438 11.601563 37 21 37 C 24.355469 37 27.460938 36.015625 30.09375 34.34375 L 42.375 46.625 L 46.625 42.375 L 34.5 30.28125 C 36.679688 27.421875 38 23.878906 38 20 C 38 10.601563 30.398438 3 21 3 Z M 21 7 C 28.199219 7 34 12.800781 34 20 C 34 27.199219 28.199219 33 21 33 C 13.800781 33 8 27.199219 8 20 C 8 12.800781 13.800781 7 21 7 Z"
-          /></svg
-        >
-      {/if}<input
-        autofocus
-        class="border-b border-gray-500 bg-gray-50 hover:bg-gray-100 focus:outline-none"
-        placeholder={landing ? "" : "Search…"}
-        bind:value={query}
-      /></span
-    >
-    <span class="flavor">
-      but searching the online catalog is so slow, and my results are largely
-      irrelevant. WTF?</span
-    >
-  </p>
-
-  <footer>
-    <Footer />
-  </footer>
+    <footer>
+      <Footer />
+    </footer>
+  </div>
 
   {#if $error !== null}
     <p class="text-red-500 mb-4">
@@ -96,12 +100,21 @@
       @apply min-h-screen max-w-none flex flex-col justify-center py-12;
     }
 
+    .landing .landing-card {
+      @apply relative w-[724px] p-6 rounded-2xl bg-white shadow-lg mx-auto border;
+    }
+
+    .landing .landing-card::before {
+      content: "";
+      @apply absolute inset-0 -z-10 -rotate-6 bg-gradient-to-r from-rose-400 to-indigo-400 rounded-2xl;
+    }
+
     .landing h1 {
       @apply text-center text-6xl mb-8;
     }
 
     .landing p {
-      @apply text-3xl max-w-[720px] mx-auto text-center mb-12;
+      @apply text-3xl text-center mb-12;
     }
 
     .landing input {
