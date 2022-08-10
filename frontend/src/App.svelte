@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+
   import Course from "./lib/Course.svelte";
   import Footer from "./lib/Footer.svelte";
   import { createSearcher, normalizeText } from "./lib/search";
@@ -24,6 +26,25 @@
 
   const { data, error, search } = createSearcher();
   $: search(normalizeText(query));
+
+  // Render courses incrementally in batches of 20 at a time, to avoid slowing
+  // down the browser with too many elements at once.
+  let showing = 0;
+  let showingTimeout = 0;
+  function showMore() {
+    const len = $data.courses?.length ?? 0;
+    if (showing < len) {
+      showing += Math.min(20, len - showing);
+      showingTimeout = window.setTimeout(showMore, 100);
+    }
+  }
+  onMount(() =>
+    data.subscribe(() => {
+      window.clearTimeout(showingTimeout);
+      showing = 0;
+      showMore();
+    })
+  );
 </script>
 
 <main class="px-4 py-8 max-w-screen-md mx-auto" class:landing>
@@ -93,7 +114,7 @@
     </p>
 
     <div class="space-y-4">
-      {#each $data.courses ?? [] as course (course.id)}
+      {#each ($data.courses ?? []).slice(0, showing) as course (course.id)}
         <Course data={course} />
       {/each}
     </div>
