@@ -37,11 +37,17 @@
     </h1>
 
     {#if !landing}
-      <p class="mb-3 text-sm text-zinc-600">
-        Try words, phrases, titles, subjects, course numbers, and instructor
-        names. You can also look for "exact phrases" and prefix* matches. Filter
-        by specific fields like @instructor:mickens or @subject:compsci.
-      </p>
+      <div class="space-y-2 mb-3 text-sm text-zinc-600">
+        <p>
+          Try words, phrases, titles, subjects, course numbers, and instructor
+          names. You can also look for "exact phrases" and prefix* matches.
+          Filter by specific fields like @instructor:mickens or
+          @subject:compsci.
+        </p>
+        <p>
+          Some useful specific filters are @semester:"fall 2022" and @level:{"{"}primgrad{"}"}.
+        </p>
+      </div>
     {/if}
 
     <p class="mb-4 text-xl">

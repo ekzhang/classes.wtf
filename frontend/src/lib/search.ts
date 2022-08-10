@@ -26,7 +26,7 @@ export type CourseData = {
     middleName: string;
     lastName: string;
   }>;
-  courseMeetingPatterns: {
+  courseMeetingPatterns: Array<{
     id: string;
     meetingTimeStartTod: string | null;
     meetingTimeEndTod: string | null;
@@ -39,7 +39,7 @@ export type CourseData = {
     meetsOnFriday: boolean;
     meetsOnSaturday: boolean;
     meetsOnSunday: boolean;
-  };
+  }>;
   termCode: number;
   unitsMaximum: number;
 };
