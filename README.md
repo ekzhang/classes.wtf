@@ -37,7 +37,7 @@ You need [Go 1.19](https://go.dev/) and [Docker](https://www.docker.com/) to wor
 This takes around 3 minutes. You can customize the data loading script if you'd like to index a different set of courses.
 
 ```bash
-go run . datasource
+go run . download
 ```
 
 ### Running the server
