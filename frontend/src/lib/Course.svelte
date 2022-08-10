@@ -3,7 +3,7 @@
 
   export let data: CourseData;
 
-  const levelCodes = {
+  const levelCodes: Record<string, string> = {
     PRIMUGRD: "Introductory",
     UGRDGRAD: "Undergrad",
     PRIMGRAD: "Graduate",

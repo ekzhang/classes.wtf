@@ -44,8 +44,14 @@ export type CourseData = {
   unitsMaximum: number;
 };
 
+type SearchResult = {
+  count: number;
+  courses: CourseData[];
+  time: number;
+};
+
 export type Searcher = {
-  data: Readable<any>;
+  data: Readable<SearchResult | undefined>;
   error: Readable<string | null>;
   search: (query: string) => void;
 };
@@ -54,7 +60,7 @@ export function createSearcher(): Searcher {
   let abort: AbortController | null = null;
   let lastQuery: string | null = null;
 
-  const data = writable<any>(undefined);
+  const data = writable<SearchResult | undefined>(undefined);
   const error = writable<string | null>(null);
   const search = async (query: string) => {
     if (query === lastQuery) return;
@@ -74,7 +80,7 @@ export function createSearcher(): Searcher {
         data.set(obj);
         error.set(null);
       }
-    } catch (err) {
+    } catch (err: any) {
       if (!localAbort.signal.aborted) {
         // Network error or some other issue.
         error.set(err.message);
@@ -88,7 +94,7 @@ export function createSearcher(): Searcher {
 /** Apply some transformations to a query to make it more useful by default. */
 export function normalizeText(query: string): string {
   if (query.length >= 2 && query.slice(-2).match(/\w{2}/)) {
-    const i = /\w+$/.exec(query).index;
+    const i = /\w+$/.exec(query)!.index;
     const partial = query.substring(i);
     query = query.substring(0, i) + `(${partial}|${partial}*)`; // prefix search
   } else if (query.length >= 1 && query.slice(-1).match(/\w/)) {

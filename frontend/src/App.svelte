@@ -32,7 +32,7 @@
   let showing = 0;
   let showingTimeout = 0;
   function showMore() {
-    const len = $data.courses?.length ?? 0;
+    const len = $data?.courses?.length ?? 0;
     if (showing < len) {
       showing += Math.min(20, len - showing);
       showingTimeout = window.setTimeout(showMore, 100);
