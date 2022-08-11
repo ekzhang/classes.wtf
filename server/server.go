@@ -94,8 +94,8 @@ func (ts *TextSearch) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	elapsed := time.Since(start)
 	log.Printf("Queried %q in %v", query, elapsed)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]any{
 			"error": err.Error(),
 		})
