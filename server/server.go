@@ -18,7 +18,7 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-type Course map[string]interface{}
+type Course map[string]any
 
 // Provides access to a populated text search index.
 type TextSearch struct {
@@ -96,7 +96,7 @@ func (ts *TextSearch) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]interface{}{
+		json.NewEncoder(w).Encode(map[string]any{
 			"error": err.Error(),
 		})
 		return
@@ -106,7 +106,7 @@ func (ts *TextSearch) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		courses = append(courses, ts.vals[id])
 	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	json.NewEncoder(w).Encode(map[string]any{
 		"count":   count,
 		"courses": courses,
 		"time":    elapsed.Seconds(),

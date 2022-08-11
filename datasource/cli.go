@@ -28,7 +28,7 @@ func DownloadCourses() {
 		indices = append(indices, i)
 	}
 
-	var courses []map[string]interface{}
+	var courses []map[string]any
 	end := indices[len(indices)-1] + maxPerPage // this is >= totalCount
 	for len(indices) > 0 {
 		start := indices[len(indices)-1]

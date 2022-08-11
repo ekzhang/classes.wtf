@@ -14,9 +14,9 @@ const endpoint = "https://curricle.berkman.harvard.edu/graphql"
 var query string
 
 type GqlRequest struct {
-	OperationName string                 `json:"operationName"`
-	Query         string                 `json:"query"`
-	Variables     map[string]interface{} `json:"variables"`
+	OperationName string         `json:"operationName"`
+	Query         string         `json:"query"`
+	Variables     map[string]any `json:"variables"`
 }
 
 type GqlResponse struct {
@@ -26,15 +26,15 @@ type GqlResponse struct {
 }
 
 type CourseData struct {
-	TotalCount int64                    `json:"totalCount"`
-	Courses    []map[string]interface{} `json:"nodes"`
+	TotalCount int64            `json:"totalCount"`
+	Courses    []map[string]any `json:"nodes"`
 }
 
 func GetCourses(keywords *string, perPage, page int) (*CourseData, error) {
 	gqlReq := GqlRequest{
 		OperationName: "getCourses",
 		Query:         query,
-		Variables: map[string]interface{}{
+		Variables: map[string]any{
 			"query":   keywords,
 			"perPage": perPage,
 			"page":    page,
