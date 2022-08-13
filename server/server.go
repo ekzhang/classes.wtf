@@ -16,45 +16,47 @@ import (
 	"github.com/NYTimes/gziphandler"
 	"github.com/antelman107/net-wait-go/wait"
 	"github.com/go-redis/redis/v8"
-)
 
-type Course map[string]any
+	"classes.wtf/datasource"
+)
 
 // Provides access to a populated text search index.
 type TextSearch struct {
 	ctx  context.Context
 	rdb  *redis.Client
-	vals map[string]Course
+	vals map[string]datasource.Course
 }
 
-func (ts *TextSearch) init(data []Course) error {
+func (ts *TextSearch) init(data []datasource.Course) error {
 	ts.rdb.Do(ts.ctx,
 		"FT.CREATE", "courses", "ON", "JSON", "PREFIX", "1", "course:", "NOOFFSETS",
 		"SCHEMA",
 		"$.title", "AS", "title", "TEXT", "WEIGHT", "2",
-		"$.courseDescription", "AS", "tagline", "TEXT",
-		"$.courseDescriptionLong", "AS", "description", "TEXT",
+		"$.description", "AS", "description", "TEXT",
 		"$.subject", "AS", "subject", "TEXT", "NOSTEM", "WEIGHT", "2",
 		"$.catalogNumber", "AS", "number", "TEXT", "NOSTEM", "WEIGHT", "2",
 		"$.semester", "AS", "semester", "TEXT",
-		// HACK: Replace with a multi-field `$.courseInstructors..displayName`
+		// HACK: Replace with a multi-field `$.instructors..name`
 		// index after https://github.com/RediSearch/RediSearch/pull/2819 is
 		// released (likely in RediSearch 2.5).
-		"$.courseInstructors[0].displayName", "AS", "instructor", "TEXT", "NOSTEM", "PHONETIC", "dm:en",
-		"$.courseInstructors[1].displayName", "AS", "instructor2", "TEXT", "NOSTEM", "PHONETIC", "dm:en",
-		"$.courseInstructors[2].displayName", "AS", "instructor3", "TEXT", "NOSTEM", "PHONETIC", "dm:en",
-		"$.componentFiltered", "AS", "component", "TAG",
-		"$.courseLevel", "AS", "level", "TAG",
+		"$.instructors[0].name", "AS", "instructor", "TEXT", "NOSTEM", "PHONETIC", "dm:en",
+		"$.instructors[1].name", "AS", "instructor2", "TEXT", "NOSTEM", "PHONETIC", "dm:en",
+		"$.instructors[2].name", "AS", "instructor3", "TEXT", "NOSTEM", "PHONETIC", "dm:en",
+		"$.component", "AS", "component", "TAG",
+		"$.level", "AS", "level", "TAG",
 		"$.academicGroup", "AS", "group", "TAG",
 	)
 
 	pipe := ts.rdb.Pipeline()
-	ts.vals = make(map[string]Course)
+	ts.vals = make(map[string]datasource.Course)
 	for i, course := range data {
-		id := course["id"].(string)
+		id := course.Id
 		s, err := json.Marshal(course)
 		if err != nil {
 			return fmt.Errorf("failed to marshal course id %v: %v", id, err)
+		}
+		if _, ok := ts.vals["course:"+id]; ok {
+			return fmt.Errorf("duplicate course id %v", id)
 		}
 		ts.vals["course:"+id] = course
 		pipe.Do(ts.ctx, "JSON.SET", "course:"+id, "$", s)
@@ -101,7 +103,7 @@ func (ts *TextSearch) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	var courses []Course
+	var courses []datasource.Course
 	for _, id := range results {
 		courses = append(courses, ts.vals[id])
 	}
@@ -178,7 +180,7 @@ func Run(uri string, static string, local bool) {
 	log.Fatal(http.ListenAndServe(":7500", nil))
 }
 
-func readData(uri string) (data []Course, err error) {
+func readData(uri string) (data []datasource.Course, err error) {
 	var buf []byte
 	if strings.HasPrefix(uri, "http://") || strings.HasPrefix(uri, "https://") {
 		resp, err := http.Get(uri)

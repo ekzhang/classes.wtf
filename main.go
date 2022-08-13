@@ -21,7 +21,7 @@ func main() {
 
 	switch os.Args[1] {
 	case "download":
-		datasource.DownloadCourses()
+		datasource.DownloadCoursesCurricle()
 	case "server":
 		serverCmd.Parse(os.Args[2:])
 		if *serverData == "" {

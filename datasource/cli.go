@@ -10,14 +10,13 @@ import (
 	"github.com/schollz/progressbar/v3"
 )
 
-func DownloadCourses() {
+func DownloadCoursesCurricle() {
 	const maxPerPage = 64
 
-	data, err := GetCourses(nil, 0, 1)
+	totalCount, _, err := GqlGetCourses(nil, 0, 1)
 	if err != nil {
 		log.Fatalf("failed to get courses: %v", err)
 	}
-	totalCount := data.TotalCount
 	if totalCount == 0 {
 		log.Fatalf("no courses found")
 	}
@@ -28,7 +27,7 @@ func DownloadCourses() {
 		indices = append(indices, i)
 	}
 
-	var courses []map[string]any
+	var courses []Course
 	end := indices[len(indices)-1] + maxPerPage // this is >= totalCount
 	for len(indices) > 0 {
 		start := indices[len(indices)-1]
@@ -38,7 +37,7 @@ func DownloadCourses() {
 			panic("invariant violated: start / perPage")
 		}
 		page := start/perPage + 1
-		data, err := GetCourses(nil, perPage, page)
+		_, data, err := GqlGetCourses(nil, perPage, page)
 		if err != nil {
 			if perPage == 1 {
 				// skipping this document: had an error :(
@@ -49,15 +48,15 @@ func DownloadCourses() {
 				indices = append(indices, start, start+perPage/2)
 			}
 		} else {
-			courses = append(courses, data.Courses...)
-			bar.Add(len(data.Courses))
+			courses = append(courses, data...)
+			bar.Add(len(data))
 			end = start
 		}
 	}
 
 	sort.Slice(courses, func(i, j int) bool {
-		id1, _ := strconv.Atoi(courses[i]["id"].(string))
-		id2, _ := strconv.Atoi(courses[j]["id"].(string))
+		id1, _ := strconv.Atoi(courses[i].Id)
+		id2, _ := strconv.Atoi(courses[j].Id)
 		return id1 < id2
 	})
 
@@ -67,4 +66,8 @@ func DownloadCourses() {
 	if err := os.WriteFile("data/courses.json", coursesText, 0644); err != nil {
 		log.Fatalf("failed to write courses.json: %v", err)
 	}
+}
+
+func DownloadCoursesMyHarvard() {
+	// TODO
 }

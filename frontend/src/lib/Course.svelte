@@ -3,15 +3,9 @@
 
   export let data: CourseData;
 
-  const levelCodes: Record<string, string> = {
-    PRIMUGRD: "Introductory",
-    UGRDGRAD: "Undergrad",
-    PRIMGRAD: "Graduate",
-  };
-
   function meetingString(data: CourseData) {
     const schedules = [];
-    for (const pattern of data.courseMeetingPatterns) {
+    for (const pattern of data.meetingPatterns) {
       let ret = "";
       if (pattern.meetsOnMonday) ret += "M";
       if (pattern.meetsOnTuesday) ret += "Tu";
@@ -21,10 +15,10 @@
       if (pattern.meetsOnSaturday) ret += "S";
       if (pattern.meetsOnSunday) ret += "Su";
       if (!ret) continue;
-      if (pattern.meetingTimeStartTod) {
-        ret += " " + pattern.meetingTimeStartTod;
-        if (pattern.meetingTimeEndTod) {
-          ret += "-" + pattern.meetingTimeEndTod;
+      if (pattern.startTime) {
+        ret += " " + pattern.startTime;
+        if (pattern.endTime) {
+          ret += "-" + pattern.endTime;
         }
       }
       schedules.push(ret);
@@ -40,21 +34,21 @@
   <h3 class="text-sm font-bold">
     <span title={data.subjectDescription}>{data.subject}</span>
     {data.catalogNumber}:
-    {data.title ?? "[No Title]"} ({data.semester})
+    {data.title || "[No Title]"} ({data.semester})
   </h3>
   <p class="text-sm mb-1">
-    {#each data.courseInstructors as instructor, i}
+    {#each data.instructors as instructor, i}
       <a href={instructor.email && `mailto:${instructor.email.toLowerCase()}`}
-        >{instructor.displayName}</a
-      >{#if i < data.courseInstructors.length - 1}{", "}{/if}
+        >{instructor.name}</a
+      >{#if i < data.instructors.length - 1}{", "}{/if}
     {/each}
   </p>
   <p class="text-xs font-light mb-1">
-    {data.academicGroup} | {levelCodes[data.courseLevel] ?? data.courseLevel} | {data.componentFiltered}
+    {data.academicGroup} | {data.level} | {data.component}
     | {meetingString(data)}
   </p>
   <div class="text-xs mb-1">
-    {@html data.courseDescriptionLong
+    {@html data.description
       .replaceAll("&nbsp;", "\xa0")
       .replaceAll(/<p>\s*<\/p>/g, "")}
   </div>
@@ -62,21 +56,21 @@
     <a
       target="_blank"
       rel="noopener noreferrer"
-      href={data.qGuideCourseId
-        ? `https://course-evaluation-reports.fas.harvard.edu/fas/course_summary.html?course_id=${data.qGuideCourseId}`
+      href={data.qGuideId
+        ? `https://course-evaluation-reports.fas.harvard.edu/fas/course_summary.html?course_id=${data.qGuideId}`
         : `https://qreports.fas.harvard.edu/home/courses?school=FAS&search=${data.subject}+${data.catalogNumber}`}
       >Q Guide</a
     >
     <a
       target="_blank"
       rel="noopener noreferrer"
-      href="https://syllabus.harvard.edu/?course_id={data.externalCourseId}"
+      href="https://syllabus.harvard.edu/?course_id={data.externalId}"
       >Syllabus</a
     >
     <a
       target="_blank"
       rel="noopener noreferrer"
-      href="https://locator.tlt.harvard.edu/course/colgsas-{data.externalCourseId}/{year}/{season}"
+      href="https://locator.tlt.harvard.edu/course/colgsas-{data.externalId}/{year}/{season}"
       >Website</a
     >
   </div>

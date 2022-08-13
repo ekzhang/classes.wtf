@@ -1,35 +1,28 @@
 import { writable, type Readable } from "svelte/store";
 
+/** This type definition comes directly from the Go datasource `Course` type. */
 export type CourseData = {
   id: string;
-  externalCourseId: number;
-  qGuideCourseId: number | null;
+  externalId: number;
+  qGuideId: number;
   title: string;
   subject: string;
   subjectDescription: string;
   catalogNumber: string;
-  courseLevel: string;
+  level: string;
   academicGroup: string;
   semester: string;
   academicYear: number;
   classSection: string;
   component: string;
-  componentFiltered: string;
-  courseDescription: string;
-  courseDescriptionLong: string;
-  courseInstructors: Array<{
-    id: string;
-    displayName: string;
+  description: string;
+  instructors: {
+    name: string;
     email: string;
-    instructorRole: string;
-    firstName: string;
-    middleName: string;
-    lastName: string;
-  }>;
-  courseMeetingPatterns: Array<{
-    id: string;
-    meetingTimeStartTod: string | null;
-    meetingTimeEndTod: string | null;
+  }[];
+  meetingPatterns: {
+    startTime: string;
+    endTime: string;
     startDate: string;
     endDate: string;
     meetsOnMonday: boolean;
@@ -39,9 +32,7 @@ export type CourseData = {
     meetsOnFriday: boolean;
     meetsOnSaturday: boolean;
     meetsOnSunday: boolean;
-  }>;
-  termCode: number;
-  unitsMaximum: number;
+  }[];
 };
 
 type SearchResult = {

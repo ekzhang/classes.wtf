@@ -62,11 +62,10 @@
         <p>
           Try words, phrases, titles, subjects, course numbers, and instructor
           names. You can also look for "exact phrases" and prefix* matches.
-          Filter by specific fields like @instructor:mickens or
-          @subject:compsci.
+          Filter by attributes like @instructor:mickens or @subject:compsci.
         </p>
         <p>
-          Some useful specific filters are @semester:"fall 2022" and @level:{"{"}primgrad{"}"}.
+          Some useful specific filters are @semester:"fall 2022" and @level:{"{"}graduate{"}"}.
         </p>
       </div>
     {/if}
