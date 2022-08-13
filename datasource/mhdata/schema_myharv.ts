@@ -61,7 +61,7 @@ export type Course = {
 
   /* e.g. "123591" */
   CRSE_ID: string,
-  DAY_OF_WEEK: ("Thursday" | "Wednesday" | "Monday" | "Tuesday" | "Friday") | ("Tuesday" | "Thursday" | "Monday" | "Wednesday" | "Friday")[],
+  DAY_OF_WEEK: ("Thursday" | "Wednesday" | "Monday" | "Tuesday" | "Friday") | (("Tuesday" | "Thursday" | "Monday" | "Wednesday" | "Friday"))[] | undefined,
   IS_SCL_DESCR: HTMLString | EmptyString,
   ENRL_STAT: ("O" | "C"),
 
@@ -73,40 +73,40 @@ export type Course = {
   IS_SCL_DESCR_IS_SCL_DESCRD: string,
   IS_SCL_DESCR_IS_SCL_DESCRH: "2022 Fall",
   IS_SCL_DESCR_IS_SCL_DESCRI: "Faculty of Arts & Sciences",
-  IS_SCL_MEETING_PAT: ("Th" | "Tu Th" | "TBA" | "We" | "Mo" | "Tu" | "Fr" | "Mo We" | "Mo Th" | "We Fr" | "Mo We Fr" | "Mo Tu We Th Fr" | "Mo Tu We Th" | "Mo Fr" | "Mo Tu Th" | "Mo Tu Th Fr" | "Th Fr") | ("We" | "Fr" | "Mo We" | "Tu" | "Th" | "Mo" | "Mo Tu We Th" | "Mo We Fr" | "Tu Th")[],
+  IS_SCL_MEETING_PAT: ("Th" | "Tu Th" | "TBA" | "We" | "Mo" | "Tu" | "Fr" | "Mo We" | "Mo Th" | "We Fr" | "Mo We Fr" | "Mo Tu We Th Fr" | "Mo Tu We Th" | "Mo Fr" | "Mo Tu Th" | "Mo Tu Th Fr" | "Th Fr") | (("We" | "Fr" | "Mo We" | "Tu" | "Th" | "Mo" | "Mo Tu We Th" | "Mo We Fr" | "Tu Th"))[],
   IS_SCL_TIME_END: TimeString | EmptyString | TimeString[],
   IS_SCL_TIME_START: TimeString | EmptyString | TimeString[],
 
   /* e.g. "Daniel Agbiboa" */
-  IS_SCL_DESCR_IS_SCL_DESCRL: string | string[],
+  IS_SCL_DESCR_IS_SCL_DESCRL: string | undefined | string[],
 
   /* e.g. "African & African Amer Studies" */
   IS_SCL_DESCR_IS_SCL_DESCRJ: string,
-  MON: ("N" | "Y") | EmptyString | ("Y" | "N")[],
+  MON: ("N" | "Y") | EmptyString | (("Y" | "N"))[],
 
   /* e.g. "Agbiboa" */
-  LAST_NAME: string | string[],
+  LAST_NAME: string | undefined | string[],
   SSR_DROP_CONSENT: ("N" | "I" | "D"),
   IS_SCL_DESCR100_HU_SCL_ATTR_LEVL: ("Primarily for Undergraduate Students" | "For Undergraduate and Graduate Students" | "Primarily for Graduate Students" | "Graduate Course" | "No Course Level"),
-  IS_SCL_DESCR100_HU_SCL_ATTR_XREG: ("Available for Harvard Cross Registration" | "Not Available for Cross Registration"),
+  IS_SCL_DESCR100_HU_SCL_ATTR_XREG: ("Available for Harvard Cross Registration" | "Not Available for Cross Registration") | undefined,
   CONSENT: ("N" | "I" | "D"),
 
   /* e.g. "999" */
   ENRL_CAP: string,
   ENRL_TOT: ("0" | "1" | "2" | "7" | "28" | "3" | "9" | "6" | "4"),
-  FRI: ("N" | "Y") | EmptyString | ("N" | "Y")[],
+  FRI: ("N" | "Y") | EmptyString | (("N" | "Y"))[],
   HU_UNITS_MIN: ("4" | "0" | "2" | "8"),
   HU_UNITS_MAX: ("4" | "16" | "0" | "2" | "8" | "12" | "164"),
 
   /* e.g. "Required of concentrators in African Studies track." */
-  HU_COURSE_PREQ: string | LongString<HTMLString>,
+  HU_COURSE_PREQ: string | undefined | LongString<HTMLString>,
   IS_SCL_DESCR100_HU_SCL_GRADE_BASIS: ("FAS Letter Graded" | "FAS Satisfactory/Unsatisfactory" | "FAS Ungraded" | "FAS Pass/Fail"),
 
   /* e.g. "11.7500" */
   IS_SCL_END_TM_DEC: string | string[],
 
   /* e.g. "9.7500" */
-  IS_SCL_STRT_TM_DEC: string | ("9" | "12" | "15" | "16" | "10" | "9.7500" | "13" | "8.5000" | "19" | "14" | "18.7500" | "11" | "16.5000")[],
+  IS_SCL_STRT_TM_DEC: string | (("9" | "12" | "15" | "16" | "10" | "9.7500" | "13" | "8.5000" | "19" | "14" | "18.7500" | "11" | "16.5000"))[],
   HU_SEC_COMP_FLAG: ("Y" | "N"),
 
   /* e.g. "001074" */
@@ -125,8 +125,8 @@ export type Course = {
 
   /* e.g. "AFRAMER11" */
   HU_SBJCT_CATNBR_NL: string,
-  CLASS_MTG_NBR: ("1" | "0" | "2" | "4") | ("1" | "2" | "3" | "4" | "5")[],
-  IS_SCL_DESCR_HU_SCL_EXAM_GROUP: ("12/09/2022 2:00 PM" | "12/15/2022 2:00 PM" | "12/17/2022 2:00 PM" | "12/10/2022 2:00 PM" | "12/16/2022 9:00 AM" | "12/17/2022 9:00 AM" | "12/16/2022 2:00 PM" | "12/08/2022 9:00 AM" | "12/14/2022 2:00 PM" | "12/12/2022 9:00 AM" | "12/09/2022 9:00 AM" | "12/14/2022 9:00 AM" | "12/13/2022 2:00 PM" | "12/15/2022 9:00 AM" | "12/08/2022 2:00 PM" | "12/10/2022 9:00 AM" | "12/12/2022 2:00 PM" | "12/13/2022 9:00 AM"),
+  CLASS_MTG_NBR: ("1" | "0" | "2" | "4") | (("1" | "2" | "3" | "4" | "5"))[],
+  IS_SCL_DESCR_HU_SCL_EXAM_GROUP: ("12/09/2022 2:00 PM" | "12/15/2022 2:00 PM" | "12/17/2022 2:00 PM" | "12/10/2022 2:00 PM" | "12/16/2022 9:00 AM" | "12/17/2022 9:00 AM" | "12/16/2022 2:00 PM" | "12/08/2022 9:00 AM" | "12/14/2022 2:00 PM" | "12/12/2022 9:00 AM" | "12/09/2022 9:00 AM" | "12/14/2022 9:00 AM" | "12/13/2022 2:00 PM" | "12/15/2022 9:00 AM" | "12/08/2022 2:00 PM" | "12/10/2022 9:00 AM" | "12/12/2022 2:00 PM" | "12/13/2022 9:00 AM") | undefined,
 
   /* e.g. "AAAS" */
   ACAD_ORG_PRIMARY_ORG: string,
@@ -140,22 +140,22 @@ export type Course = {
   HU_WAIT_CAP: ("0" | "999"),
 
   /* e.g. "X|*|Daniel Agbiboa|*||*||*||*|X" */
-  PROFILEBUTTON: string | string[],
+  PROFILEBUTTON: string | undefined | string[],
 
   /* e.g. "Lecture" */
   SSR_COMPONENTDESCR: string,
   URL_URLNAME: URLString,
-  IS_SCL_DESCR100_HU_SCL_ATTR_LDD: ("Social Sciences" | "Arts and Humanities" | "None" | "Science & Engineering & Applied Science"),
+  IS_SCL_DESCR100_HU_SCL_ATTR_LDD: ("Social Sciences" | "Arts and Humanities" | "None" | "Science & Engineering & Applied Science") | undefined,
 
   /* e.g. "DIS|***|DIS|***|Discussion|***|DIS|*|N|*|N|*|N|*|N|*|N|*|N|*|N|*||*||*| |*||*|1" */
-  IS_SCL_DESCR_HU_SCL_SEC_COMP: string | string[],
+  IS_SCL_DESCR_HU_SCL_SEC_COMP: string | undefined | string[],
   CRSE_ATTR_VALUE_HU_LEVL_ATTR: ("PRIMUGRD" | "UGRDGRAD" | "PRIMGRAD" | "GRADCOURSE" | "NOLEVEL"),
-  CRSE_ATTR_VALUE_HU_LDD_ATTR: ("SOC" | "A&H" | "NONE" | "SCI"),
-  CRSE_ATTR_VALUE_HU_XREG_ATTR: ("YESXREG" | "NOXREG"),
+  CRSE_ATTR_VALUE_HU_LDD_ATTR: ("SOC" | "A&H" | "NONE" | "SCI") | undefined,
+  CRSE_ATTR_VALUE_HU_XREG_ATTR: ("YESXREG" | "NOXREG") | undefined,
   SAT: "N" | EmptyString,
-  THURS: ("Y" | "N") | EmptyString | ("N" | "Y")[],
-  TUES: ("N" | "Y") | EmptyString | ("Y" | "N")[],
-  WED: ("N" | "Y") | EmptyString | ("Y" | "N")[],
+  THURS: ("Y" | "N") | EmptyString | (("N" | "Y"))[],
+  TUES: ("N" | "Y") | EmptyString | (("Y" | "N"))[],
+  WED: ("N" | "Y") | EmptyString | (("Y" | "N"))[],
   HU_INSTRUCT_MODE: EmptyString,
   LOCATION_DESCR_LOCATION: ("Cambridge Campus" | "Allston Campus" | "Longwood Campus" | "Off Campus Location" | "Mass Institute of Technology" | "Harvard Divinity School"),
 
@@ -170,17 +170,17 @@ export type Course = {
   ShopCartOpenCheck: "N",
 
   /* e.g. "Completion of African and African American Studies 10, or a substitute course approved by the Director of Undergraduate Studies." */
-  HU_REC_PREP: string | HTMLString,
-  IS_SCL_DESCR_IS_SCL_DESCRN: HTMLString | HTMLString[],
+  HU_REC_PREP: string | undefined | HTMLString,
+  IS_SCL_DESCR_IS_SCL_DESCRN: HTMLString | undefined | HTMLString[],
 
   /* e.g. "Faculty of Arts & Sciences}{2228}{17778}{HAA}{193X" */
-  IS_SCL_DESCR_HU_SCL_XREG: string | string[],
+  IS_SCL_DESCR_HU_SCL_XREG: string | undefined | string[],
 
   /* e.g. "The American Gender Archive" */
-  DESCRFORMAL_COURSE_TOPIC: string,
-  MultiSection: {
+  DESCRFORMAL_COURSE_TOPIC: string | undefined,
+  MultiSection: ({
     Key: ("Section1" | "Section2" | "Section3"),
-    CourseMtgNmbr1: ("1" | "4" | "2"),
+    CourseMtgNmbr1: ("1" | "4" | "2") | undefined,
     CrseTopicId: "0",
     START_DT: "2022-08-31",
     END_DT: ("2022-12-01" | "2022-10-14"),
@@ -199,22 +199,22 @@ export type Course = {
     Fr: ("N" | "Y"),
     Sa: "N",
     Su: "N",
-    CourseMtgNmbr2: ("2" | "3" | "5"),
-    CourseMtgNmbr3: "3",
-  }[],
+    CourseMtgNmbr2: ("2" | "3" | "5") | undefined,
+    CourseMtgNmbr3: "3" | undefined,
+  })[] | undefined,
 
   /* e.g. "Course open to Graduate Students Only" */
-  HU_COURSE_REQ: string,
-  IS_SCL_DESCR100_HU_SCL_ATTR_LQR: "Yes",
-  HU_ALIAS: ("AP" | "AM" | "ASTRO" | "CS" | "HDRB" | "EPS" | "EC" | "WGS" | "ES" | "HIST LIT" | "HUM" | "LS" | "PS" | "PSYCH" | "SOC"),
+  HU_COURSE_REQ: string | undefined,
+  IS_SCL_DESCR100_HU_SCL_ATTR_LQR: "Yes" | undefined,
+  HU_ALIAS: ("AP" | "AM" | "ASTRO" | "CS" | "HDRB" | "EPS" | "EC" | "WGS" | "ES" | "HIST LIT" | "HUM" | "LS" | "PS" | "PSYCH" | "SOC") | undefined,
 
   /* e.g. "AP282" */
-  HU_ALIAS_CATNBR_NL: string | ("PSYCH1576" | "PSYCH980")[],
+  HU_ALIAS_CATNBR_NL: string | undefined | (("PSYCH1576" | "PSYCH980"))[],
 
   /* e.g. "AP282" */
-  HU_ALIAS_CATNBR_NS: string | ("PSYCH1576" | "PSYCH980JS")[],
-  IS_SCL_DESCR100_HU_SCL_ATTR_AREC: "MDE approved SEAS 100 level course",
-  CRSE_ATTR_VALUE_HU_AREC_ATTR: "E-MDE-SEAS",
-  IS_SCL_DESCR100_HU_SCL_ATTR_GE: ("Histories, Societies, Individuals" | "Aesthetics and Culture" | "Science and Technology in Society" | "Ethics and Civics") | ("Ethics and Civics" | "Histories, Societies, Individuals" | "Science and Technology in Society")[],
-  CRSE_ATTR_VALUE_HU_GE_ATTR: ("HSI" | "A&C" | "STS" | "E&C") | ("E&C" | "HSI" | "STS")[],
+  HU_ALIAS_CATNBR_NS: string | undefined | (("PSYCH1576" | "PSYCH980JS"))[],
+  IS_SCL_DESCR100_HU_SCL_ATTR_AREC: "MDE approved SEAS 100 level course" | undefined,
+  CRSE_ATTR_VALUE_HU_AREC_ATTR: "E-MDE-SEAS" | undefined,
+  IS_SCL_DESCR100_HU_SCL_ATTR_GE: ("Histories, Societies, Individuals" | "Aesthetics and Culture" | "Science and Technology in Society" | "Ethics and Civics") | (("Ethics and Civics" | "Histories, Societies, Individuals" | "Science and Technology in Society"))[] | undefined,
+  CRSE_ATTR_VALUE_HU_GE_ATTR: ("HSI" | "A&C" | "STS" | "E&C") | (("E&C" | "HSI" | "STS"))[] | undefined,
 };

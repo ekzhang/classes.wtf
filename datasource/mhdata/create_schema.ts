@@ -90,6 +90,17 @@ function mergeTypeInfo(acc: MixedTypeInfo | undefined, curr: TypeInfo) : MixedTy
   for (let childKey in curr.childKeyToMixedTypeInfo) {
     existing.childKeyToMixedTypeInfo[childKey] = mergeMixedTypeInfo(existing.childKeyToMixedTypeInfo[childKey], curr.childKeyToMixedTypeInfo[childKey]);
   }
+  // note keys that are in existing but not in curr -- mark as undefined
+  for (let childKey in existing.childKeyToMixedTypeInfo) {
+    if (!curr.childKeyToMixedTypeInfo[childKey]) {
+      existing.childKeyToMixedTypeInfo[childKey].Undefined = {
+        type: T.Undefined,
+        count: (existing.childKeyToMixedTypeInfo[childKey]?.Undefined?.count ?? 0) + 1,
+        examples: new Set([undefined]),
+        childKeyToMixedTypeInfo: {},
+      };
+    }
+  }
   return acc;
 }
 
@@ -138,7 +149,10 @@ function convertTypeInfoToSchema(typeInfo: TypeInfo, level: number) : string {
   }
   if (type === T.Array) {
     const childTypeInfo = childKeyToMixedTypeInfo['[i]'];
-    return `${convertMixedTypeInfoToSchema(childTypeInfo, level)}[]`;
+    let childSchema = convertMixedTypeInfoToSchema(childTypeInfo, level);
+    if (childSchema.includes(' | ')) return `(${childSchema})[]`;
+    return `${childSchema}[]`;
+    // return `Array<${childSchema}>`;
   }
   if (type === T.Object) {
     let currIndent = ''.padStart(level * 2, ' ');

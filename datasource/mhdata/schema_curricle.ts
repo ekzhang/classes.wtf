@@ -25,7 +25,7 @@ export type Course = {
   /* e.g. "Reading Scholarly Japanese" */
   courseDescription: string | null,
   courseDescriptionLong: HTMLString | (LongString<string>) | EmptyString,
-  courseInstructors: {
+  courseInstructors: ({
 
     /* e.g. "Wesley Jacobsen" */
     displayName: string | EmptyString,
@@ -45,9 +45,9 @@ export type Course = {
 
     /* e.g. "Mark" */
     middleName: string | EmptyString | null,
-  }[],
+  } | undefined)[],
   courseLevel: ("PRIMGRAD" | "PRIMUGRD" | "UGRDGRAD" | "NOLEVEL"),
-  courseMeetingPatterns: {
+  courseMeetingPatterns: ({
 
     /* e.g. "2018-12-05" */
     endDate: string,
@@ -70,7 +70,7 @@ export type Course = {
 
     /* e.g. "2018-09-04" */
     startDate: string,
-  }[],
+  } | undefined)[],
   externalCourseId: number,
 
   /* e.g. "162368" */
