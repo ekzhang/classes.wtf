@@ -13,25 +13,25 @@ const gqlEndpoint = "https://curricle.berkman.harvard.edu/graphql"
 //go:embed getCourses.gql
 var gqlQuery string
 
-type GqlRequest struct {
+type gqlRequest struct {
 	OperationName string         `json:"operationName"`
 	Query         string         `json:"query"`
 	Variables     map[string]any `json:"variables"`
 }
 
-type GqlResponse struct {
+type gqlResponse struct {
 	Data struct {
-		CoursesConnection GqlCourseData `json:"coursesConnection"`
+		CoursesConnection gqlCourseData `json:"coursesConnection"`
 	} `json:"data"`
 }
 
-type GqlCourseData struct {
+type gqlCourseData struct {
 	TotalCount int64            `json:"totalCount"`
 	Nodes      []map[string]any `json:"nodes"`
 }
 
-func GqlGetCourses(keywords *string, perPage, page int) (count int64, courses []Course, err error) {
-	gqlReq := GqlRequest{
+func gqlGetCourses(keywords *string, perPage, page int) (count int64, courses []Course, err error) {
+	gqlReq := gqlRequest{
 		OperationName: "getCourses",
 		Query:         gqlQuery,
 		Variables: map[string]any{
@@ -61,7 +61,7 @@ func GqlGetCourses(keywords *string, perPage, page int) (count int64, courses []
 		return
 	}
 
-	gqlResp := GqlResponse{}
+	gqlResp := gqlResponse{}
 	if err = json.NewDecoder(resp.Body).Decode(&gqlResp); err != nil {
 		err = fmt.Errorf("could not unmarshal response body: %v", err)
 		return

@@ -7,11 +7,12 @@ import (
 	"github.com/schollz/progressbar/v3"
 )
 
+// Download course data from the Curricle source.
 func DownloadCoursesCurricle() []Course {
 	const maxPerPage = 64
 
 	log.Printf("starting to download from Curricle (Fall 2018 - Spring 2022)")
-	totalCount, _, err := GqlGetCourses(nil, 0, 1)
+	totalCount, _, err := gqlGetCourses(nil, 0, 1)
 	if err != nil {
 		log.Fatalf("failed to get courses: %v", err)
 	}
@@ -29,13 +30,13 @@ func DownloadCoursesCurricle() []Course {
 	end := indices[len(indices)-1] + maxPerPage // this is >= totalCount
 	for len(indices) > 0 {
 		start := indices[len(indices)-1]
-		indices = indices[0 : len(indices)-1]
+		indices = indices[:len(indices)-1]
 		perPage := end - start
 		if start%perPage != 0 {
 			panic("invariant violated: start / perPage")
 		}
 		page := start/perPage + 1
-		_, data, err := GqlGetCourses(nil, perPage, page)
+		_, data, err := gqlGetCourses(nil, perPage, page)
 		if err != nil {
 			if perPage == 1 {
 				// skipping this document: had an error :(
@@ -60,6 +61,7 @@ func DownloadCoursesCurricle() []Course {
 	return courses
 }
 
+// Download course data from the official My.Harvard source.
 func DownloadCoursesMyHarvard() []Course {
 	log.Printf("starting to download from My.Harvard (Fall 2022 onward)")
 	// TODO
