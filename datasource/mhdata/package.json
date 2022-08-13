@@ -1,0 +1,17 @@
+{
+  "main": "fetch_classes2.ts",
+  "scripts": {
+    "build": "tsc --build tsconfig.json",
+    "fetch": "npm run build && node ./dist/fetch_classes.js",
+    "schema": "npm run build && node ./dist/create_schema.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "cli-progress": "^3.11.2",
+    "node-fetch": "^3.2.10"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/cli-progress": "^3.11.0"
+  }
+}
