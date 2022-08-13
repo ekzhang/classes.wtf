@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"log"
 	"os"
@@ -21,7 +22,13 @@ func main() {
 
 	switch os.Args[1] {
 	case "download":
-		datasource.DownloadCoursesCurricle()
+		var courses []datasource.Course
+		courses = append(courses, datasource.DownloadCoursesCurricle()...)
+		courses = append(courses, datasource.DownloadCoursesMyHarvard()...)
+		coursesText, _ := json.Marshal(courses)
+		if err := os.WriteFile("data/courses.json", coursesText, 0644); err != nil {
+			log.Fatalf("failed to write courses.json: %v", err)
+		}
 	case "server":
 		serverCmd.Parse(os.Args[2:])
 		if *serverData == "" {

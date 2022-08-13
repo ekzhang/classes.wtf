@@ -1,18 +1,16 @@
 package datasource
 
 import (
-	"encoding/json"
 	"log"
-	"os"
 	"sort"
-	"strconv"
 
 	"github.com/schollz/progressbar/v3"
 )
 
-func DownloadCoursesCurricle() {
+func DownloadCoursesCurricle() []Course {
 	const maxPerPage = 64
 
+	log.Printf("starting to download from Curricle (Fall 2018 - Spring 2022)")
 	totalCount, _, err := GqlGetCourses(nil, 0, 1)
 	if err != nil {
 		log.Fatalf("failed to get courses: %v", err)
@@ -55,19 +53,15 @@ func DownloadCoursesCurricle() {
 	}
 
 	sort.Slice(courses, func(i, j int) bool {
-		id1, _ := strconv.Atoi(courses[i].Id)
-		id2, _ := strconv.Atoi(courses[j].Id)
-		return id1 < id2
+		return courses[i].Id < courses[j].Id
 	})
 
-	log.Printf("read %v out of %v total courses\n", len(courses), totalCount)
-
-	coursesText, _ := json.Marshal(courses)
-	if err := os.WriteFile("data/courses.json", coursesText, 0644); err != nil {
-		log.Fatalf("failed to write courses.json: %v", err)
-	}
+	log.Printf("read %v out of %v total courses", len(courses), totalCount)
+	return courses
 }
 
-func DownloadCoursesMyHarvard() {
+func DownloadCoursesMyHarvard() []Course {
+	log.Printf("starting to download from My.Harvard (Fall 2022 onward)")
 	// TODO
+	return nil
 }
