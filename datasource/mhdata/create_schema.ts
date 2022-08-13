@@ -1,7 +1,7 @@
 /**
  * Convert a JSON object to a TypeScript type definition.
- * In particular converting harvard course data (array of JSON objects) and
- * outputting TypeScript type definitions to schema.ts
+ * In particular converting my.harvard/curricle course data
+ * to TypeScript type definitions in schema_myharv.ts and schema_curricle.ts
  */
 
 import fs from 'fs';
@@ -18,8 +18,8 @@ enum T {
   String = 'String',
   XMLString = "XMLString", // if starts with "<?xml"
   HTMLString = "HTMLString", // "<p>hello</p>", etc. if it includes "</"
-  URLString = "URLString",
-  TimeString = "TimeString", // [00-12]:[00-59](am | pm)
+  URLString = "URLString", // starts with "http" and is a valid URL
+  TimeString = "TimeString", // [0-12]:[00-59](am | pm)
   Object = 'Object',
   Array = 'Array',
 }
@@ -31,15 +31,6 @@ type TypeInfo = {
   examples: Set<any>;
   childKeyToMixedTypeInfo: { [key: string]: MixedTypeInfo };
 };
-
-// functions we'll need:
-// - getType(val: any) : T
-// - getTypeInfo(val: any) : TypeInfo
-// - mergeTypeInfo(acc: MixedTypeInfo, curr: TypeInfo) : MixedTypeInfo
-// - mergeMixedTypeInfo(acc: MixedTypeInfo, curr: MixedTypeInfo) : MixedTypeInfo
-// - convertMixedTypeInfoToSchema(mixedTypeInfo: MixedTypeInfo, level: number) : string
-// - convertTypeInfoToSchema(typeInfo: TypeInfo, level: number) : string
-// - convertToSchema(typeInfo: TypeInfo) : string
 
 function getType(val: any) : T {
   if (val === null) return T.Null;
@@ -56,7 +47,7 @@ function getType(val: any) : T {
         return T.URLString;
       } catch (e) {}
     }
-    if (val.match(/^[0-9]{1,2}:[0-9]{1,2}(am|pm)$/)) return T.TimeString;
+    if (val.match(/^[0-9]{1,2}:[0-9]{2}(am|pm)$/)) return T.TimeString;
     return T.String;
   }
   if (Array.isArray(val)) return T.Array;
@@ -136,13 +127,13 @@ function convertTypeInfoToSchema(typeInfo: TypeInfo, level: number) : string {
   }
   if (type === T.String || type === T.XMLString || type === T.HTMLString || type === T.URLString || type === T.TimeString) {
     let tsType = type === T.String ? 'string' : type === T.XMLString ? 'XMLString' : type === T.HTMLString ? 'HTMLString' : type === T.URLString ? 'URLString' : type === T.TimeString ? 'TimeString' : 'InvalidString';
-    const formatString = (str : string) => {
+    const formatString = (str : string) : string => {
       str = str.trim().replace(/"/g, `\\"`);
-      if (str.length < 30) return `"${str}"`;
-      return `"${str.substring(0, 27)}... (${tsType} of length ${str.length})"`;
+      if (str.length < 100) return `"${str}"`;
+      return `LongString<${tsType}>`;
     }
     if (examples.size === 1) return formatString(examples.values().next().value);
-    if (examples.size < 20 && type === T.String) return `(${[...examples].map(formatString).join(' | ')})`;
+    if (examples.size < 20 && type === T.String) return `(${[...new Set([...examples].map(formatString))].join(' | ')})`;
     return tsType;
   }
   if (type === T.Array) {
@@ -159,7 +150,7 @@ function convertTypeInfoToSchema(typeInfo: TypeInfo, level: number) : string {
       childSchemas.push(`${childKey}: ${convertMixedTypeInfoToSchema(childTypeInfo, level + 1)},`);
 
       // print example of string above the key
-      if (childTypeInfo.String && childTypeInfo.String.count > 20) {
+      if (childTypeInfo.String && childTypeInfo.String.examples.size > 20) {
         childSchemas[childSchemas.length - 1] = `\n${newIndent}/* e.g. "${childTypeInfo.String.examples.values().next().value.trim().replace(/"/g, `\\"`).replace(/\*\//g, `*\\/`).replace(/\n/g, `\\n`)}" */\n${newIndent}${childSchemas[childSchemas.length - 1]}`;
       } else {
         childSchemas[childSchemas.length - 1] = `${newIndent}${childSchemas[childSchemas.length - 1]}`;
@@ -177,8 +168,9 @@ function convertToSchema(typeInfo : TypeInfo) : string {
 type EmptyString = string; // "", " ", etc
 type XMLString = string; // starts with "<?xml"
 type HTMLString = string; // includes "</"
-type URLString = string;
+type URLString = string; // starts with "http" and is a valid URL
 type TimeString = string; // hh:mm(am | pm)
+type LongString<T> = string; // used in place of actual string in an enum when the string is too long
 
 export type Course = ${convertTypeInfoToSchema(typeInfo, 0)};
 `;
@@ -186,14 +178,14 @@ export type Course = ${convertTypeInfoToSchema(typeInfo, 0)};
 
 function main() {
   // save my.harvard schema to schema1.ts
-  const courses1: Course[] = Object.values(JSON.parse(fs.readFileSync('../data/courses_2022_Fall.json', 'utf8')).courses);
+  const courses1: Course[] = Object.values(JSON.parse(fs.readFileSync('../../data/courses_2022_Fall.json', 'utf8')).courses);
   const typeInfo1 = getTypeInfo(courses1);
   const schema1 = convertToSchema(typeInfo1.childKeyToMixedTypeInfo['[i]'].Object!);
   fs.writeFileSync('./schema_myharv.ts', schema1, 'utf8');
   console.log("My.Harvard Done!")
 
   // save curricle schema to schema2.ts
-  const courses2: Course[] = Object.values(JSON.parse(fs.readFileSync('../data/courses_newlines.json', 'utf8')));
+  const courses2: Course[] = Object.values(JSON.parse(fs.readFileSync('../../data/courses_newlines.json', 'utf8')));
   const typeInfo2 = getTypeInfo(courses2);
   const schema2 = convertToSchema(typeInfo2.childKeyToMixedTypeInfo['[i]'].Object!);
   fs.writeFileSync('./schema_curricle.ts', schema2, 'utf8');
