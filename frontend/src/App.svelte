@@ -1,17 +1,20 @@
+<script lang="ts" context="module">
+  export function encodeQueryHash(query: string): string {
+    return "#" + encodeURIComponent(query).replaceAll("%20", "+");
+  }
+
+  export function decodeQueryHash(hash: string): string {
+    return decodeURIComponent(hash.slice(1).replaceAll("+", "%20"));
+  }
+</script>
+
 <script lang="ts">
   import { onMount } from "svelte";
 
   import Course from "./lib/Course.svelte";
   import Footer from "./lib/Footer.svelte";
+  import QueryLink from "./lib/QueryLink.svelte";
   import { createSearcher, normalizeText } from "./lib/search";
-
-  function encodeQueryHash(query: string): string {
-    return "#" + encodeURIComponent(query).replaceAll("%20", "+");
-  }
-
-  function decodeQueryHash(hash: string): string {
-    return decodeURIComponent(hash.slice(1).replaceAll("+", "%20"));
-  }
 
   let query: string = location.hash ? decodeQueryHash(location.hash) : "";
   $: {
@@ -61,11 +64,16 @@
       <div class="space-y-2 mb-3 text-sm text-zinc-600">
         <p>
           Try words, phrases, titles, subjects, course numbers, and instructor
-          names. You can also look for "exact phrases" and prefix* matches.
-          Filter by attributes like @instructor:mickens or @subject:compsci.
+          names. You can also look for exact textual phrases (like
+          <QueryLink bind:query value={`"creative process"`} />) and prefix
+          matches (such as
+          <QueryLink bind:query value={`genom*`} />).
         </p>
         <p>
-          Some useful specific filters are @semester:"fall 2022" and @level:{"{"}graduate{"}"}.
+          Filter by specific attributes like
+          <QueryLink bind:query value={`@subject:compsci`} />,
+          <QueryLink bind:query value={`@semester:"fall 2022"`} />, and
+          <QueryLink bind:query value={`@level:{graduate}`} />.
         </p>
       </div>
     {/if}
