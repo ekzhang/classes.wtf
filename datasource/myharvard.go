@@ -191,6 +191,9 @@ func to24hr(s string) string {
 	if err != nil {
 		panic(err)
 	}
+	if hours == 12 { // 12:00pm -> 12:00, and 12:00am -> 00:00.
+		hours = 0
+	}
 	hours += offset
 	return fmt.Sprintf("%02d:%02d", hours, minutes)
 }
