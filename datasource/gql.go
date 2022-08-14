@@ -30,34 +30,19 @@ type gqlCourseData struct {
 	Nodes      []map[string]any `json:"nodes"`
 }
 
-func gqlGetCourses(keywords *string, perPage, page int) (count int64, courses []Course, err error) {
+func gqlGetCourses(pageSize, page uint) (count int64, courses []Course, err error) {
 	gqlReq := gqlRequest{
 		OperationName: "getCourses",
 		Query:         gqlQuery,
 		Variables: map[string]any{
-			"query":   keywords,
-			"perPage": perPage,
+			"perPage": pageSize,
 			"page":    page,
 		},
 	}
-	reqBody, err := json.Marshal(&gqlReq)
-	if err != nil {
-		err = fmt.Errorf("could not marshal request body: %v", err)
-		return
-	}
 
-	req, _ := http.NewRequest("POST", gqlEndpoint, bytes.NewBuffer(reqBody))
-	req.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := gqlRequestRetry(&gqlReq)
 	if err != nil {
-		err = fmt.Errorf("failed graphql request: %v", err)
-		return
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		err = fmt.Errorf("graphql request had bad status code: %v", resp.Status)
+		err = fmt.Errorf("graphql: %v", err)
 		return
 	}
 
@@ -103,7 +88,7 @@ func gqlGetCourses(keywords *string, perPage, page int) (count int64, courses []
 			Subject:            node["subject"].(string),
 			SubjectDescription: node["subjectDescription"].(string),
 			CatalogNumber:      node["catalogNumber"].(string),
-			Level:              gqlLevel(node["courseLevel"].(string)),
+			Level:              harvardLevel(node["courseLevel"].(string)),
 			AcademicGroup:      node["academicGroup"].(string),
 			Semester:           node["semester"].(string),
 			AcademicYear:       uint32(node["academicYear"].(float64)),
@@ -115,6 +100,36 @@ func gqlGetCourses(keywords *string, perPage, page int) (count int64, courses []
 		})
 	}
 
+	return
+}
+
+func gqlRequestRetry(gqlReq *gqlRequest) (resp *http.Response, err error) {
+	reqBody, err := json.Marshal(&gqlReq)
+	if err != nil {
+		err = fmt.Errorf("could not marshal request body: %v", err)
+		return
+	}
+
+	const retries = 3
+
+	client := &http.Client{}
+	for i := 0; i < retries; i++ {
+		req, _ := http.NewRequest("POST", gqlEndpoint, bytes.NewBuffer(reqBody))
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err = client.Do(req)
+		if err != nil {
+			err = fmt.Errorf("failed http request: %v", err)
+			continue
+		}
+		if resp.StatusCode != http.StatusOK {
+			err = fmt.Errorf("http request had bad status code: %v", resp.Status)
+			resp.Body.Close()
+			continue
+		}
+		err = nil
+		return
+	}
 	return
 }
 
@@ -134,9 +149,9 @@ func castOrEmpty(val any) string {
 	}
 }
 
-func gqlLevel(level string) string {
+func harvardLevel(level string) string {
 	switch level {
-	case "PRIMUGRD":
+	case "PRIMUGRD", "INTRO":
 		return "Intro"
 	case "UGRDGRAD":
 		return "Undergrad"

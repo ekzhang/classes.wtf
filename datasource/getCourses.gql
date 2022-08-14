@@ -1,6 +1,5 @@
-query getCourses($query: String, $perPage: Int!, $page: Int!) {
+query getCourses($perPage: Int!, $page: Int!) {
   coursesConnection(
-    basic: $query
     perPage: $perPage
     page: $page
     courseLevels: [NOLEVEL, PRIMUGRD, UGRDGRAD, PRIMGRAD] # skip 300-level
