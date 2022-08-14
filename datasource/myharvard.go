@@ -134,8 +134,8 @@ func mhGetCourses(pageSize, page uint) (count int64, courses []Course, err error
 		courses = append(courses, Course{
 			Id:                 id,
 			ExternalId:         castAsInt(obj["CRSE_ID"].(string)),
-			QGuideId:           0, // New courses don't use the old Q guide.
-			Title:              obj["Title"].(string),
+			QGuideId:           0,                                 // New courses don't use the old Q guide.
+			Title:              removeTags(obj["Title"].(string)), // Sometimes there are <b> tags.
 			Subject:            obj["SUBJECT"].(string),
 			SubjectDescription: obj["IS_SCL_DESCR_IS_SCL_DESCRD"].(string),
 			CatalogNumber:      strings.Trim(obj["CATALOG_NBR"].(string), " "),
@@ -145,9 +145,9 @@ func mhGetCourses(pageSize, page uint) (count int64, courses []Course, err error
 			AcademicYear:       castAsInt(obj["ACAD_YEAR"].(string)),
 			ClassSection:       obj["CLASS_SECTION"].(string),
 			Component:          obj["SSR_COMPONENTDESCR"].(string),
-			Description:        obj["IS_SCL_DESCR"].(string),
+			Description:        sanitizeHtml(obj["IS_SCL_DESCR"].(string)),
 			Instructors:        instructors,
-			MeetingPatterns:    meetingPatterns, // TODO
+			MeetingPatterns:    meetingPatterns,
 		})
 	}
 

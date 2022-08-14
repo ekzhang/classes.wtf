@@ -41,7 +41,7 @@ type Course struct {
 	// Component describes the type of course (Studio, Lecture).
 	Component string `json:"component"`
 
-	// Description is the human-readable long form text of the course.
+	// Description is the human-readable long form HTML text of the course.
 	Description string `json:"description"`
 
 	// Instructors describes each instructor in the course.

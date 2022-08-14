@@ -94,7 +94,7 @@ func gqlGetCourses(pageSize, page uint) (count int64, courses []Course, err erro
 			AcademicYear:       uint32(node["academicYear"].(float64)),
 			ClassSection:       node["classSection"].(string),
 			Component:          node["component"].(string),
-			Description:        node["courseDescriptionLong"].(string),
+			Description:        sanitizeHtml(node["courseDescriptionLong"].(string)),
 			Instructors:        instructors,
 			MeetingPatterns:    meetingPatterns,
 		})
