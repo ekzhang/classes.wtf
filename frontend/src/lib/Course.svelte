@@ -38,8 +38,10 @@
   </h3>
   <p class="text-sm mb-1">
     {#each data.instructors as instructor, i}
-      <a href={instructor.email && `mailto:${instructor.email.toLowerCase()}`}
-        >{instructor.name}</a
+      <a
+        href={instructor.email
+          ? `mailto:${instructor.email.toLowerCase()}`
+          : undefined}>{instructor.name}</a
       >{#if i < data.instructors.length - 1}{", "}{/if}
     {/each}
   </p>
