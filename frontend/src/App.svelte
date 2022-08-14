@@ -27,8 +27,12 @@
   let landing = query === "";
   $: if (query) landing = false;
 
+  let ay2023 = false;
+
   const { data, error, search } = createSearcher();
-  $: search(normalizeText(query));
+  $: finalQuery =
+    (ay2023 ? "@academicYear:[2023 2023] " : "") + normalizeText(query);
+  $: search(finalQuery);
 
   // Render courses incrementally in batches of 20 at a time, to avoid slowing
   // down the browser with too many elements at once.
@@ -81,7 +85,7 @@
     <p class="mb-4 text-xl">
       <span class="flavor">I just want to take a class about </span>
       <!-- svelte-ignore a11y-autofocus -->
-      <span class="relative input-wrapper"
+      <span class="relative searchbar-wrapper"
         >{#if !landing}
           <svg
             class="w-5 h-5 absolute top-0 left-3 text-gray-400 pointer-events-none"
@@ -93,7 +97,7 @@
           >
         {/if}<input
           autofocus
-          class="border-b border-gray-500 bg-gray-50 hover:bg-gray-100 focus:outline-none"
+          class="searchbar border-b border-gray-500 bg-gray-50 hover:bg-gray-100 focus:outline-none"
           placeholder={landing ? "" : "Search…"}
           bind:value={query}
         /></span
@@ -104,6 +108,13 @@
       >
     </p>
 
+    {#if !landing}
+      <label class="flex text-sm mb-2">
+        <input class="mr-2" type="checkbox" bind:checked={ay2023} />
+        Only show AY 2022-2023 courses
+      </label>
+    {/if}
+
     <footer>
       <Footer />
     </footer>
@@ -111,7 +122,7 @@
 
   {#if $error !== null}
     <p class="text-red-500 mb-4">
-      Error searching for <code>{normalizeText(query)}</code>: {$error}
+      {$error}
     </p>
   {/if}
   {#if query && $data}
@@ -160,11 +171,11 @@
     @apply hidden;
   }
 
-  main:not(.landing) .input-wrapper {
+  main:not(.landing) .searchbar-wrapper {
     @apply text-base;
   }
 
-  main:not(.landing) input {
+  main:not(.landing) .searchbar {
     @apply w-full px-3 py-2 pl-10;
   }
 

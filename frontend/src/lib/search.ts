@@ -65,7 +65,7 @@ export function createSearcher(): Searcher {
       });
       if (!resp.ok) {
         const obj = await resp.json();
-        error.set(obj.error);
+        error.set(`Error searching for ${query}: ${obj.error}`);
       } else {
         const obj = await resp.json();
         data.set(obj);
