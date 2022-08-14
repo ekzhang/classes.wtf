@@ -2,15 +2,19 @@
 
 package datasource
 
-import "github.com/microcosm-cc/bluemonday"
+import (
+	"html"
+
+	"github.com/microcosm-cc/bluemonday"
+)
 
 var ugcPolicy = bluemonday.UGCPolicy()
 var strictPolicy = bluemonday.StrictPolicy()
 
-func sanitizeHtml(html string) string {
-	return ugcPolicy.Sanitize(html)
+func sanitizeHtml(content string) string {
+	return ugcPolicy.Sanitize(content)
 }
 
-func removeTags(html string) string {
-	return strictPolicy.Sanitize(html)
+func removeTags(content string) string {
+	return html.UnescapeString(strictPolicy.Sanitize(content))
 }
