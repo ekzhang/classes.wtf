@@ -85,6 +85,8 @@ export function createSearcher(): Searcher {
 /** Apply some transformations to a query to make it more useful by default. */
 export function normalizeText(query: string): string {
   query = query.replaceAll("-", " "); // dash syntax is too confusing for users
+  query = query.replaceAll(/[–—…«»‘’]/g, " "); // trim special unicode punctuation
+  query = query.replaceAll(/[“”]/g, '"'); // make smart quotes less smart
 
   if (query.length >= 2 && query.slice(-2).match(/\w{2}/)) {
     const i = /\w+$/.exec(query)!.index;
