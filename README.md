@@ -74,4 +74,4 @@ fly deploy [--remote-only] # for remote build
 
 Created by Eric Zhang ([@ekzhang1](https://twitter.com/ekzhang1)). Licensed under the [MIT license](LICENSE).
 
-Thanks to Raphael Kats ([@neuralfluid](https://twitter.com/neuralfluid)) for engineering work exploring the My.Harvard data source.
+The author would like to thank to Raphael Kats ([@neuralfluid](https://twitter.com/neuralfluid)) for his engineering work exploring the My.Harvard data source. Also, thanks to Naomi Bashkansky, Marissa Li, Henry Cerbone, and Rachel Li for helping advertise the site.
