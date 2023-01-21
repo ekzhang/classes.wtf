@@ -27,7 +27,8 @@
     return schedules.join(", ");
   }
 
-  $: [season, year] = data.semester.split(" ");
+  $: [season, _] = data.semester.split(" ");
+  $: locatorYear = data.academicYear - 1; // for course website URLs
 </script>
 
 <div>
@@ -72,7 +73,7 @@
     <a
       target="_blank"
       rel="noopener noreferrer"
-      href="https://locator.tlt.harvard.edu/course/colgsas-{data.externalId}/{year}/{season}"
+      href="https://locator.tlt.harvard.edu/course/colgsas-{data.externalId}/{locatorYear}/{season}"
       >Website</a
     >
   </div>
