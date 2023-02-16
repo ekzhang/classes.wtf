@@ -5,10 +5,10 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM golang:1.19 AS builder
+FROM golang:1.20 AS builder
 WORKDIR /go/app
 COPY . .
-RUN go build
+RUN go build -buildvcs=false
 
 FROM redis/redis-stack-server:7.0.2-RC1 AS redis-stack
 
