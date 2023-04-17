@@ -10,7 +10,7 @@ WORKDIR /go/app
 COPY . .
 RUN go build -buildvcs=false
 
-FROM redis/redis-stack-server:7.0.2-RC1 AS redis-stack
+FROM redis/redis-stack-server:7.0.6-RC8 AS redis-stack
 
 FROM redis:7-bullseye
 RUN ln -sf /bin/bash /bin/sh
