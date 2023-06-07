@@ -5,7 +5,7 @@ query getCourses($perPage: Int!, $page: Int!) {
     courseLevels: [NOLEVEL, PRIMUGRD, UGRDGRAD, PRIMGRAD] # skip 300-level
     semesterRange: {
       start: { termName: FALL, termYear: 2018 }
-      end: { termName: SPRING, termYear: 2022 }
+      end: { termName: SPRING, termYear: 2023 }
     }
   ) {
     totalCount
