@@ -30,7 +30,7 @@ The frontend is a static website built with [Svelte](https://svelte.dev/), and i
 
 ## Development
 
-You need [Go 1.19](https://go.dev/) and [Docker](https://www.docker.com/) to work on the backend and [Node.js v16](https://nodejs.org/en/) for the frontend.
+You need [Go 1.20](https://go.dev/) and [Docker](https://www.docker.com/) to work on the backend and [Node.js v18](https://nodejs.org/en/) for the frontend.
 
 ### Downloading the dataset
 
@@ -67,11 +67,11 @@ docker run -it --rm -p 7500:7500 classes.wtf
 ### Deployment
 
 ```bash
-fly deploy [--remote-only] # for remote build
+fly deploy
 ```
 
 ## Acknowledgements
 
 Created by Eric Zhang ([@ekzhang1](https://twitter.com/ekzhang1)). Licensed under the [MIT license](LICENSE).
 
-The author would like to thank to Raphael Kats ([@neuralfluid](https://twitter.com/neuralfluid)) for his engineering work exploring the My.Harvard data source. Also, thanks to Naomi Bashkansky, Marissa Li, Henry Cerbone, and Rachel Li for helping advertise the site.
+In addition, thanks to Raphael Kats for helping build scripts to explore and document data from the My.Harvard API. Numerous students helped advertise the site in college communities.
