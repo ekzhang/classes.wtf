@@ -8,10 +8,13 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+
+	"github.com/nanmu42/limitio"
 )
 
 // The official Harvard course catalog's search endpoint.
@@ -40,9 +43,17 @@ func mhSearchRaw(search map[string]any) ([]any, error) {
 		return nil, fmt.Errorf("post request had bad status code: %v", resp.Status)
 	}
 
+	// Store the beginning of the response body into a buffer, so we can log it
+	// if there's an error.
+	var msgBuilder strings.Builder
+	msgBuilder.Grow(1024)
+	msgWriter := limitio.NewWriter(&msgBuilder, msgBuilder.Cap(), true)
+	respBody := io.TeeReader(resp.Body, msgWriter)
+
 	var jsonResp []any
-	if err = json.NewDecoder(resp.Body).Decode(&jsonResp); err != nil {
-		return nil, fmt.Errorf("could not unmarshal response body: %v", err)
+	if err = json.NewDecoder(respBody).Decode(&jsonResp); err != nil {
+		return nil, fmt.Errorf("could not unmarshal response body: %v\n"+
+			"first %v bytes of response body: %v", err, msgBuilder.Cap(), msgBuilder.String())
 	}
 	return jsonResp, nil
 }
