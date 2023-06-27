@@ -56,7 +56,7 @@ func mhGetCourses(pageSize, page uint) (count int64, courses []Course, err error
 	CRSE_ATTR_VALUE_HU_LEVL_ATTR:"INTRO" |
 	CRSE_ATTR_VALUE_HU_LEVL_ATTR:"PRIMGRAD" |
 	CRSE_ATTR_VALUE_HU_LEVL_ATTR:"PRIMUGRD")
-	(Term:"2228" | Term:"2232")`
+	(STRM:"2228" | STRM:"2232")`
 	searchText = strings.ReplaceAll(searchText, "\n", " ")
 	searchText = strings.ReplaceAll(searchText, "\t", "")
 
