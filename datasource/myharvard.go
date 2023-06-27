@@ -55,19 +55,16 @@ func mhSearchRaw(search map[string]any) ([]any, error) {
 
 // Download a paginated set of courses from My.Harvard.
 func mhGetCourses(pageSize, page uint) (count int64, courses []Course, err error) {
-	// Non-graduate level courses, in Fall 2022 and Spring 2023.
-	searchText := `
-	(CRSE_ATTR_VALUE_HU_LEVL_ATTR:"UGRDGRAD" |
-	CRSE_ATTR_VALUE_HU_LEVL_ATTR:"NOLEVEL" |
-	CRSE_ATTR_VALUE_HU_LEVL_ATTR:"INTRO" |
-	CRSE_ATTR_VALUE_HU_LEVL_ATTR:"PRIMGRAD" |
-	CRSE_ATTR_VALUE_HU_LEVL_ATTR:"PRIMUGRD")
-	(STRM:"2228" | STRM:"2232")`
-	searchText = strings.ReplaceAll(searchText, "\n", " ")
-	searchText = strings.ReplaceAll(searchText, "\t", "")
+	facets := []string{
+		"IS_SCL_DESCR_IS_SCL_DESCRI:Faculty of Arts & Sciences:School", // Restrict courses to FAS.
+	}
+	// Courses in Fall 2022 and Spring 2023.
+	searchText := `(STRM:"2228" | STRM:"2232")`
 
 	search := map[string]any{
 		"ExcludeBracketed":          true,
+		"Exclude300":                true, // Exclude graduate-level courses.
+		"Facets":                    facets,
 		"PageNumber":                page,
 		"Category":                  "HU_SCL_SCHEDULED_BRACKETED_COURSES",
 		"SearchPropertiesInResults": true,
