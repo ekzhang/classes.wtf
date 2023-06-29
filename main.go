@@ -23,9 +23,17 @@ func main() {
 	switch os.Args[1] {
 	case "download":
 		var courses []datasource.Course
-		courses = append(courses, datasource.DownloadCoursesCurricle()...)
-		courses = append(courses, datasource.DownloadCoursesMyHarvard()...)
+
+		for year := 2018; year <= 2021; year++ {
+			curricle := datasource.SearchCurricle{Year: year, PerPage: 128}
+			courses = append(courses, datasource.PaginatedDownload(&curricle, 2)...)
+		}
+
+		mh := datasource.SearchMh{Year: 2022}
+		courses = append(courses, datasource.PaginatedDownload(&mh, 32)...)
+
 		coursesText, _ := json.Marshal(courses)
+
 		if err := os.WriteFile("data/courses.json", coursesText, 0644); err != nil {
 			log.Fatalf("failed to write courses.json: %v", err)
 		}

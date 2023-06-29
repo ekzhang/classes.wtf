@@ -12,7 +12,7 @@ import (
 // Searcher describes a type that can return paginated course data.
 type Searcher interface {
 	// PageSize is the number of courses returned per page.
-	PageSize() int
+	PageSize() uint
 
 	// TotalCount makes the request and returns the number of results.
 	TotalCount() (int64, error)
@@ -22,7 +22,8 @@ type Searcher interface {
 }
 
 // PaginatedDownload fetches courses over the network, with specified concurrency.
-func PaginatedDownload(searcher Searcher, pageSize uint, concurrency uint) []Course {
+func PaginatedDownload(searcher Searcher, concurrency uint) []Course {
+	pageSize := searcher.PageSize()
 	totalCount, err := searcher.TotalCount()
 	if err != nil {
 		log.Fatalf("failed to get courses: %v", err)

@@ -8,52 +8,36 @@ import (
 	"net/http"
 )
 
-const gqlEndpoint = "https://curricle.berkman.harvard.edu/graphql"
+const curricleEndpoint = "https://curricle.berkman.harvard.edu/graphql"
 
-//go:embed getCourses.gql
-var gqlQuery string
+//go:embed curricle.gql
+var curricleGqlQuery string
 
-type gqlRequest struct {
-	OperationName string         `json:"operationName"`
-	Query         string         `json:"query"`
-	Variables     map[string]any `json:"variables"`
+// SearchCurricle implements Searcher for the Curricle GraphQL endpoint.
+type SearchCurricle struct {
+	Year    int
+	PerPage uint
 }
 
-type gqlResponse struct {
-	Data struct {
-		CoursesConnection gqlCourseData `json:"coursesConnection"`
-	} `json:"data"`
+func (s *SearchCurricle) PageSize() uint {
+	return s.PerPage
 }
 
-type gqlCourseData struct {
-	TotalCount int64            `json:"totalCount"`
-	Nodes      []map[string]any `json:"nodes"`
-}
-
-func gqlGetCourses(pageSize, page uint) (count int64, courses []Course, err error) {
-	gqlReq := gqlRequest{
-		OperationName: "getCourses",
-		Query:         gqlQuery,
-		Variables: map[string]any{
-			"perPage": pageSize,
-			"page":    page,
-		},
-	}
-
-	resp, err := gqlRequestRetry(&gqlReq)
+func (s *SearchCurricle) TotalCount() (int64, error) {
+	resp, err := s.request(1)
 	if err != nil {
-		err = fmt.Errorf("graphql: %v", err)
+		return 0, err
+	}
+	return resp.Data.CoursesConnection.TotalCount, nil
+}
+
+func (s *SearchCurricle) Fetch(page uint) (courses []Course, err error) {
+	resp, err := s.request(page)
+	if err != nil {
 		return
 	}
 
-	gqlResp := gqlResponse{}
-	if err = json.NewDecoder(resp.Body).Decode(&gqlResp); err != nil {
-		err = fmt.Errorf("could not unmarshal response body: %v", err)
-		return
-	}
-
-	count = gqlResp.Data.CoursesConnection.TotalCount
-	nodes := gqlResp.Data.CoursesConnection.Nodes
+	nodes := resp.Data.CoursesConnection.Nodes
 	for _, node := range nodes {
 		instructors := []Instructor{}
 		for _, obj := range node["courseInstructors"].([]any) {
@@ -103,6 +87,46 @@ func gqlGetCourses(pageSize, page uint) (count int64, courses []Course, err erro
 	return
 }
 
+func (s *SearchCurricle) request(page uint) (*gqlResponse, error) {
+	gqlReq := gqlRequest{
+		OperationName: "getCourses",
+		Query:         curricleGqlQuery,
+		Variables: map[string]any{
+			"perPage":   s.PerPage,
+			"page":      page,
+			"yearStart": s.Year,
+			"yearEnd":   s.Year + 1,
+		},
+	}
+
+	resp, err := gqlRequestRetry(&gqlReq)
+	if err != nil {
+		return nil, fmt.Errorf("graphql: %v", err)
+	}
+
+	gqlResp := gqlResponse{}
+	if err = json.NewDecoder(resp.Body).Decode(&gqlResp); err != nil {
+		return nil, fmt.Errorf("could not unmarshal response body: %v", err)
+	}
+
+	return &gqlResp, nil
+}
+
+type gqlRequest struct {
+	OperationName string         `json:"operationName"`
+	Query         string         `json:"query"`
+	Variables     map[string]any `json:"variables"`
+}
+
+type gqlResponse struct {
+	Data struct {
+		CoursesConnection struct {
+			TotalCount int64            `json:"totalCount"`
+			Nodes      []map[string]any `json:"nodes"`
+		} `json:"coursesConnection"`
+	} `json:"data"`
+}
+
 func gqlRequestRetry(gqlReq *gqlRequest) (resp *http.Response, err error) {
 	reqBody, err := json.Marshal(&gqlReq)
 	if err != nil {
@@ -114,7 +138,7 @@ func gqlRequestRetry(gqlReq *gqlRequest) (resp *http.Response, err error) {
 
 	client := &http.Client{}
 	for i := 0; i < retries; i++ {
-		req, _ := http.NewRequest("POST", gqlEndpoint, bytes.NewBuffer(reqBody))
+		req, _ := http.NewRequest("POST", curricleEndpoint, bytes.NewBuffer(reqBody))
 		req.Header.Set("Content-Type", "application/json")
 
 		resp, err = client.Do(req)
@@ -131,35 +155,4 @@ func gqlRequestRetry(gqlReq *gqlRequest) (resp *http.Response, err error) {
 		return
 	}
 	return
-}
-
-func castOrZero(val any) float64 {
-	if val == nil {
-		return 0
-	} else {
-		return val.(float64)
-	}
-}
-
-func castOrEmpty(val any) string {
-	if val == nil {
-		return ""
-	} else {
-		return val.(string)
-	}
-}
-
-func harvardLevel(level string) string {
-	switch level {
-	case "PRIMUGRD", "INTRO":
-		return "Intro"
-	case "UGRDGRAD":
-		return "Undergrad"
-	case "PRIMGRAD":
-		return "Graduate"
-	case "GRADCOURSE":
-		return "Research"
-	default:
-		return "N/A"
-	}
 }
