@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -40,9 +41,14 @@ func mhSearchRaw(search map[string]any) ([]any, error) {
 		return nil, fmt.Errorf("post request had bad status code: %v", resp.Status)
 	}
 
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %v", err)
+	}
 	var jsonResp []any
-	if err = json.NewDecoder(resp.Body).Decode(&jsonResp); err != nil {
-		return nil, fmt.Errorf("could not unmarshal response body: %v", err)
+	if err := json.Unmarshal(respBody, &jsonResp); err != nil {
+		return nil, fmt.Errorf("could not unmarshal response body: %v\n"+
+			"response body: %v", err, respBody)
 	}
 	return jsonResp, nil
 }
@@ -56,7 +62,7 @@ func mhGetCourses(pageSize, page uint) (count int64, courses []Course, err error
 	CRSE_ATTR_VALUE_HU_LEVL_ATTR:"INTRO" |
 	CRSE_ATTR_VALUE_HU_LEVL_ATTR:"PRIMGRAD" |
 	CRSE_ATTR_VALUE_HU_LEVL_ATTR:"PRIMUGRD")
-	(Term:"2228" | Term:"2232")`
+	(STRM:"2228" | STRM:"2232")`
 	searchText = strings.ReplaceAll(searchText, "\n", " ")
 	searchText = strings.ReplaceAll(searchText, "\t", "")
 
@@ -131,6 +137,10 @@ func mhGetCourses(pageSize, page uint) (count int64, courses []Course, err error
 			}
 		}
 
+		level, ok := obj["CRSE_ATTR_VALUE_HU_LEVL_ATTR"]
+		if !ok {
+			level = ""
+		}
 		courses = append(courses, Course{
 			Id:                 id,
 			ExternalId:         castAsInt(obj["CRSE_ID"].(string)),
@@ -139,7 +149,7 @@ func mhGetCourses(pageSize, page uint) (count int64, courses []Course, err error
 			Subject:            obj["SUBJECT"].(string),
 			SubjectDescription: obj["IS_SCL_DESCR_IS_SCL_DESCRD"].(string),
 			CatalogNumber:      strings.Trim(obj["CATALOG_NBR"].(string), " "),
-			Level:              harvardLevel(obj["CRSE_ATTR_VALUE_HU_LEVL_ATTR"].(string)),
+			Level:              harvardLevel(level.(string)),
 			AcademicGroup:      obj["ACAD_CAREER"].(string),
 			Semester:           reverseSemesterOrder(obj["IS_SCL_DESCR_IS_SCL_DESCRH"].(string)),
 			AcademicYear:       castAsInt(obj["ACAD_YEAR"].(string)),
