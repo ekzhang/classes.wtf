@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig frontend/tsconfig.json",
-    "format": "prettier --write ."
+    "format": "prettier --ignore-path .gitignore --write .",
+    "format:check": "prettier --ignore-path .gitignore --check ."
   },
   "dependencies": {
     "svelte": "^3.55.1"
