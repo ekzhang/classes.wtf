@@ -15,7 +15,7 @@ import (
 
 	"github.com/NYTimes/gziphandler"
 	"github.com/antelman107/net-wait-go/wait"
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 
 	"classes.wtf/datasource"
 )
