@@ -5,11 +5,11 @@ go 1.18
 require (
 	github.com/NYTimes/gziphandler v1.1.1
 	github.com/antelman107/net-wait-go v0.0.0-20220211074630-12d8a944b87d
-	github.com/go-redis/redis/v8 v8.11.5
 	github.com/microcosm-cc/bluemonday v1.0.24
 	github.com/nanmu42/limitio v1.0.0
+	github.com/redis/go-redis/v9 v9.0.5
 	github.com/schollz/progressbar/v3 v3.13.1
-	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
+	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df
 )
 
 require (
