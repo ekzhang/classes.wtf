@@ -194,7 +194,7 @@ func mhSearchRaw(search map[string]any) ([]any, error) {
 	var jsonResp []any
 	if err := json.Unmarshal(respBody, &jsonResp); err != nil {
 		return nil, fmt.Errorf("could not unmarshal response body: %v\n"+
-			"response body: %v", err, respBody)
+			"response body: %v", err, string(respBody))
 	}
 	return jsonResp, nil
 }
