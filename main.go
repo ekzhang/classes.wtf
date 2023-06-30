@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"classes.wtf/datasource"
 	"classes.wtf/server"
@@ -48,6 +49,34 @@ func main() {
 		if err := os.WriteFile(filename, coursesJson, 0644); err != nil {
 			log.Fatalf("failed to write courses.json: %v", err)
 		}
+
+	case "combine":
+		combineCmd := flag.NewFlagSet("combine", flag.ExitOnError)
+		combineCmd.Parse(os.Args[2:])
+
+		log.Printf("searching for course data in the data/ folder")
+		results, err := filepath.Glob("data/courses-*.json")
+		if err != nil {
+			log.Fatalf("failed glob for data files: %v", err)
+		}
+		var courses []datasource.Course
+		for _, filename := range results {
+			file, err := os.Open(filename)
+			if err != nil {
+				log.Fatalf("failed to open %s: %v", filename, err)
+			}
+			var yearCourses []datasource.Course
+			if err = json.NewDecoder(file).Decode(&yearCourses); err != nil {
+				log.Fatalf("failed to parse %s: %v", filename, err)
+			}
+			log.Printf("  - %s  [len: %d]", filename, len(yearCourses))
+			courses = append(courses, yearCourses...)
+		}
+		coursesJson, _ := json.Marshal(courses)
+		if err := os.WriteFile("data/courses.json", coursesJson, 0644); err != nil {
+			log.Fatalf("failed to write courses.json: %v", err)
+		}
+		log.Printf("wrote %d courses to data/courses.json", len(courses))
 
 	case "server":
 		serverCmd := flag.NewFlagSet("server", flag.ExitOnError)
