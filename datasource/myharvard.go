@@ -39,7 +39,7 @@ func (s *SearchMh) TotalCount() (int64, error) {
 }
 
 func (s *SearchMh) Fetch(page uint) (courses []Course, err error) {
-	_, results, err := s.request(1)
+	_, results, err := s.request(page)
 	if err != nil {
 		return
 	}
