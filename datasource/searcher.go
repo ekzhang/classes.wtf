@@ -9,13 +9,22 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-// Download a paginated set of courses over the network, with specified concurrency.
-func paginatedDownload(
-	callback func(uint, uint) (int64, []Course, error),
-	pageSize uint,
-	concurrency uint,
-) []Course {
-	totalCount, _, err := callback(pageSize, 1)
+// Searcher describes a type that can return paginated course data.
+type Searcher interface {
+	// PageSize is the number of courses returned per page.
+	PageSize() uint
+
+	// TotalCount makes the request and returns the number of results.
+	TotalCount() (int64, error)
+
+	// Fetch returns a list of courses for the given page.
+	Fetch(page uint) ([]Course, error)
+}
+
+// PaginatedDownload fetches courses over the network, with specified concurrency.
+func PaginatedDownload(searcher Searcher, concurrency uint) []Course {
+	pageSize := searcher.PageSize()
+	totalCount, err := searcher.TotalCount()
 	if err != nil {
 		log.Fatalf("failed to get courses: %v", err)
 	}
@@ -36,7 +45,7 @@ func paginatedDownload(
 		go func() {
 			defer func() { <-semaphore }()
 			defer wg.Done()
-			_, data, err := callback(pageSize, 1+i/pageSize)
+			data, err := searcher.Fetch(1 + i/pageSize)
 			if err != nil {
 				log.Fatalf("failed to get courses: %v", err)
 			}
@@ -59,16 +68,4 @@ func paginatedDownload(
 	log.Printf("read %v out of %v total courses (%v before compaction)",
 		len(courses), totalCount, initialLen)
 	return courses
-}
-
-// Download course data from the Curricle source.
-func DownloadCoursesCurricle() []Course {
-	log.Printf("starting to download from Curricle (Fall 2018 - Spring 2022)")
-	return paginatedDownload(gqlGetCourses, 128, 2)
-}
-
-// Download course data from the official My.Harvard source.
-func DownloadCoursesMyHarvard() []Course {
-	log.Printf("starting to download from My.Harvard (Fall 2022 onward)")
-	return paginatedDownload(mhGetCourses, 25, 32)
 }
