@@ -94,8 +94,8 @@ func (s *SearchCurricle) request(page uint) (*gqlResponse, error) {
 		Variables: map[string]any{
 			"perPage":   s.PerPage,
 			"page":      page,
-			"yearStart": s.Year,
-			"yearEnd":   s.Year + 1,
+			"yearStart": s.Year - 1,
+			"yearEnd":   s.Year,
 		},
 	}
 

@@ -20,7 +20,7 @@ func main() {
 	switch os.Args[1] {
 	case "download":
 		downloadCmd := flag.NewFlagSet("download", flag.ExitOnError)
-		year := downloadCmd.Int("year", 0, "year to download")
+		year := downloadCmd.Int("year", 0, "academic year to download")
 		downloadCmd.Parse(os.Args[2:])
 
 		var courses []datasource.Course
@@ -29,10 +29,10 @@ func main() {
 		case *year == 0:
 			log.Fatal("download requires a -year")
 
-		case *year < 1990:
-			log.Fatal("curricle does not have years before 1990")
+		case *year < 1991:
+			log.Fatal("curricle does not have data before AY 1991")
 
-		case *year <= 2021:
+		case *year <= 2022:
 			log.Printf("downloading from Curricle for year %d", *year)
 			curricle := datasource.SearchCurricle{Year: *year, PerPage: 128}
 			courses = append(courses, datasource.PaginatedDownload(&curricle, 2)...)
