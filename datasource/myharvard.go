@@ -123,23 +123,19 @@ func (s *SearchMh) request(page uint) (props map[string]any, results map[string]
 		return
 	}
 
-	// Non-graduate level courses, in the specified year.
-	searchText := `
-	(CRSE_ATTR_VALUE_HU_LEVL_ATTR:"UGRDGRAD" |
-	CRSE_ATTR_VALUE_HU_LEVL_ATTR:"NOLEVEL" |
-	CRSE_ATTR_VALUE_HU_LEVL_ATTR:"INTRO" |
-	CRSE_ATTR_VALUE_HU_LEVL_ATTR:"PRIMGRAD" |
-	CRSE_ATTR_VALUE_HU_LEVL_ATTR:"PRIMUGRD") ` + yearFilter
-	searchText = strings.ReplaceAll(searchText, "\n", " ")
-	searchText = strings.ReplaceAll(searchText, "\t", "")
+	facets := []string{
+		"IS_SCL_DESCR_IS_SCL_DESCRI:Faculty of Arts & Sciences:School", // Restrict courses to FAS.
+	}
 
 	search := map[string]any{
 		"ExcludeBracketed":          true,
+		"Exclude300":                true, // Exclude graduate-level courses.
+		"Facets":                    facets,
 		"PageNumber":                page,
 		"Category":                  "HU_SCL_SCHEDULED_BRACKETED_COURSES",
 		"SearchPropertiesInResults": true,
 		"FacetsInResults":           false,
-		"SearchText":                searchText,
+		"SearchText":                yearFilter,
 	}
 	data, err := mhSearchRaw(search)
 	if err != nil {
