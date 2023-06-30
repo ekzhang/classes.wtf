@@ -119,7 +119,7 @@ func (s *SearchMh) request(page uint) (props map[string]any, results map[string]
 	if s.Year == 2022 {
 		yearFilter = `(STRM:"2228" | STRM:"2232")`
 	} else {
-		err = fmt.Errorf("invalid year %v", s.Year)
+		err = fmt.Errorf("no filter set for year %v", s.Year)
 		return
 	}
 
