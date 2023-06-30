@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -85,6 +86,10 @@ func (s *SearchMh) Fetch(page uint) (courses []Course, err error) {
 			}
 		}
 
+		level, ok := obj["CRSE_ATTR_VALUE_HU_LEVL_ATTR"]
+		if !ok {
+			level = ""
+		}
 		courses = append(courses, Course{
 			Id:                 id,
 			ExternalId:         castAsInt(obj["CRSE_ID"].(string)),
@@ -93,7 +98,7 @@ func (s *SearchMh) Fetch(page uint) (courses []Course, err error) {
 			Subject:            obj["SUBJECT"].(string),
 			SubjectDescription: obj["IS_SCL_DESCR_IS_SCL_DESCRD"].(string),
 			CatalogNumber:      strings.Trim(obj["CATALOG_NBR"].(string), " "),
-			Level:              harvardLevel(obj["CRSE_ATTR_VALUE_HU_LEVL_ATTR"].(string)),
+			Level:              harvardLevel(level.(string)),
 			AcademicGroup:      obj["ACAD_CAREER"].(string),
 			Semester:           mhReverseSemesterOrder(obj["IS_SCL_DESCR_IS_SCL_DESCRH"].(string)),
 			AcademicYear:       castAsInt(obj["ACAD_YEAR"].(string)),
@@ -112,7 +117,7 @@ func (s *SearchMh) request(page uint) (props map[string]any, results map[string]
 	var yearFilter string
 
 	if s.Year == 2022 {
-		yearFilter = `(Term:"2228" | Term:"2232")`
+		yearFilter = `(STRM:"2228" | STRM:"2232")`
 	} else {
 		err = fmt.Errorf("invalid year %v", s.Year)
 		return
@@ -182,9 +187,14 @@ func mhSearchRaw(search map[string]any) ([]any, error) {
 		return nil, fmt.Errorf("post request had bad status code: %v", resp.Status)
 	}
 
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %v", err)
+	}
 	var jsonResp []any
-	if err = json.NewDecoder(resp.Body).Decode(&jsonResp); err != nil {
-		return nil, fmt.Errorf("could not unmarshal response body: %v", err)
+	if err := json.Unmarshal(respBody, &jsonResp); err != nil {
+		return nil, fmt.Errorf("could not unmarshal response body: %v\n"+
+			"response body: %v", err, respBody)
 	}
 	return jsonResp, nil
 }
