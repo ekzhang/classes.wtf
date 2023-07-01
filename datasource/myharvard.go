@@ -126,12 +126,16 @@ func (s *SearchMh) request(page uint) (props map[string]any, results map[string]
 	facets := []string{
 		"IS_SCL_DESCR_IS_SCL_DESCRI:Faculty of Arts & Sciences:School", // Restrict courses to FAS.
 	}
+	sortOrder := []string{
+		"URL_URLNAME", // Sort by the unique locator URL to prevent duplicates (see issue #7).
+	}
 
 	search := map[string]any{
 		"ExcludeBracketed":          true,
 		"Exclude300":                true, // Exclude graduate-level courses.
 		"Facets":                    facets,
 		"PageNumber":                page,
+		"SortOrder":                 sortOrder,
 		"Category":                  "HU_SCL_SCHEDULED_BRACKETED_COURSES",
 		"SearchPropertiesInResults": true,
 		"FacetsInResults":           false,
