@@ -81,6 +81,7 @@ func (s *SearchCurricle) Fetch(page uint) (courses []Course, err error) {
 			Description:        sanitizeHtml(node["courseDescriptionLong"].(string)),
 			Instructors:        instructors,
 			MeetingPatterns:    meetingPatterns,
+			GenEdArea:          getGenEdInfo(node["courseAttributes"].([]interface{})), 
 		})
 	}
 

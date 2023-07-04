@@ -49,6 +49,9 @@ type Course struct {
 
 	// MeetingPatterns describes the course's meeting times.
 	MeetingPatterns []MeetingPattern `json:"meetingPatterns"`
+
+	// GenEdArea contains the GENED requirement(s), if any. Empty if not a GENED. 
+	GenEdArea[]string `json:"genEdArea"`
 }
 
 // Instructor describes a faculty course instructor.
