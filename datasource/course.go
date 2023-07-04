@@ -52,6 +52,9 @@ type Course struct {
 
 	// GenEdArea contains the GENED requirement(s), if any. Empty if not a GENED. 
 	GenEdArea[]string `json:"genEdArea"`
+
+	// DivisionalDist contains the divisional distribution requirement(s), if any. 
+	DivisionalDist[]string `json:"divisionalDist"`
 }
 
 // Instructor describes a faculty course instructor.

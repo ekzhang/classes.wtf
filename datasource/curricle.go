@@ -82,6 +82,7 @@ func (s *SearchCurricle) Fetch(page uint) (courses []Course, err error) {
 			Instructors:        instructors,
 			MeetingPatterns:    meetingPatterns,
 			GenEdArea:          getGenEdInfo(node["courseAttributes"].([]interface{})), 
+			DivisionalDist:	 	getDivisionalInfo(node["courseAttributes"].([]interface{})),
 		})
 	}
 
