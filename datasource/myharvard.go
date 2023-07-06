@@ -131,13 +131,14 @@ func mhGetCourses(pageSize, page uint) (count int64, courses []Course, err error
 			}
 		}
 
+		//  Add general education requirements
 		generalEducation := []GeneralEducation{}
-		switch ge := obj["IS_SCL_DESCR_IS_SCL_DESCRGE"].(type) {
+		switch ge := obj["HU_DPB_HU_GENERAL_EDUCATION"].(type) {
 		case string:
 			generalEducation = append(generalEducation, GeneralEducation{GENED Requirement: ge})
 		case []any:
 			for _, ge := range ge {
-				instructors = append(generalEducation, GeneralEducation{GENED Requirement: ge})
+				generalEducation = append(generalEducation, GeneralEducation{GENED Requirement: ge})
 			}
 		}
 
@@ -159,7 +160,7 @@ func mhGetCourses(pageSize, page uint) (count int64, courses []Course, err error
 			Instructors:        instructors,
 			MeetingPatterns:    meetingPatterns,
 			Location:           obj["LOCATION"].(string),
-			GeneralEducation:	generalEducation
+			GeneralEducation:	obj["HU_DPB_HU_GENERAL_EDUCATION"].(string)
 		})
 	}
 
