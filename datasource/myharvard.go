@@ -131,6 +131,16 @@ func mhGetCourses(pageSize, page uint) (count int64, courses []Course, err error
 			}
 		}
 
+		generalEducation := []GeneralEducation{}
+		switch ge := obj["IS_SCL_DESCR_IS_SCL_DESCRGE"].(type) {
+		case string:
+			generalEducation = append(generalEducation, GeneralEducation{GENED Requirement: ge})
+		case []any:
+			for _, ge := range ge {
+				instructors = append(generalEducation, GeneralEducation{GENED Requirement: ge})
+			}
+		}
+
 		courses = append(courses, Course{
 			Id:                 id,
 			ExternalId:         castAsInt(obj["CRSE_ID"].(string)),
@@ -148,6 +158,8 @@ func mhGetCourses(pageSize, page uint) (count int64, courses []Course, err error
 			Description:        sanitizeHtml(obj["IS_SCL_DESCR"].(string)),
 			Instructors:        instructors,
 			MeetingPatterns:    meetingPatterns,
+			Location:           obj["LOCATION"].(string),
+			GeneralEducation:	generalEducation
 		})
 	}
 

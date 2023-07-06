@@ -44,6 +44,9 @@ type Course struct {
 	// Description is the human-readable long form HTML text of the course.
 	Description string `json:"description"`
 
+	// GeneralEducation describes the general education requirements fulfilled.
+	GeneralEducation string `json:"generalEducation"`
+
 	// Instructors describes each instructor in the course.
 	Instructors []Instructor `json:"instructors"`
 
