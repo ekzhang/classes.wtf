@@ -116,8 +116,8 @@ func (s *SearchMh) Fetch(page uint) (courses []Course, err error) {
 func (s *SearchMh) request(page uint) (props map[string]any, results map[string]any, err error) {
 	var yearFilter string
 
-	if s.Year == 2023 {
-		yearFilter = `(STRM:"2228" | STRM:"2232")`
+	if s.Year == 2024 {
+		yearFilter = `(STRM:"2238" | STRM:"2242")`
 	} else {
 		err = fmt.Errorf("no filter set for year %v", s.Year)
 		return
