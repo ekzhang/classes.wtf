@@ -27,11 +27,11 @@
   let landing = query === "";
   $: if (query) landing = false;
 
-  let ay2023 = false;
+  let ay2024 = false;
 
   const { data, error, search } = createSearcher();
   $: finalQuery =
-    (ay2023 ? "@academicYear:[2023 2023] " : "") + normalizeText(query);
+    (ay2024 ? "@academicYear:[2024 2024] " : "") + normalizeText(query);
   $: search(finalQuery);
 
   // Render courses incrementally in batches of 20 at a time, to avoid slowing
@@ -110,8 +110,8 @@
 
     {#if !landing}
       <label class="flex text-sm mb-2">
-        <input class="mr-2" type="checkbox" bind:checked={ay2023} />
-        Only show AY 2022-2023 courses
+        <input class="mr-2" type="checkbox" bind:checked={ay2024} />
+        Only show AY 2023-2024 courses
       </label>
     {/if}
 
