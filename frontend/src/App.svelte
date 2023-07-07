@@ -27,7 +27,7 @@
   let landing = query === "";
   $: if (query) landing = false;
 
-  let ay2024 = false;
+  let ay2024 = true;
 
   const { data, error, search } = createSearcher();
   $: finalQuery =
