@@ -114,12 +114,8 @@ func (s *SearchMh) Fetch(page uint) (courses []Course, err error) {
 }
 
 func (s *SearchMh) request(page uint) (props map[string]any, results map[string]any, err error) {
-	var yearFilter string
-
-	if s.Year == 2024 {
-		yearFilter = `(STRM:"2238" | STRM:"2242")`
-	} else {
-		err = fmt.Errorf("no filter set for year %v", s.Year)
+	yearFilter, err := mhGetYearFilter(s.Year)
+	if err != nil {
 		return
 	}
 
@@ -160,6 +156,20 @@ func (s *SearchMh) request(page uint) (props map[string]any, results map[string]
 		err = fmt.Errorf("passed page size of %v, but received page size of %v",
 			mhPageSize, realPageSize)
 		return
+	}
+	return
+}
+
+// Convert an academic year to a query selecting that year's terms.
+// Example: 2024 selects Fall 2023 and Spring 2024.
+func mhGetYearFilter(year int) (yearFilter string, err error) {
+	switch year {
+	case 2024:
+		yearFilter = `(STRM:"2238" | STRM:"2242")`
+	case 2023:
+		yearFilter = `(STRM:"2228" | STRM:"2232")`
+	default:
+		err = fmt.Errorf("no filter set for year %v", year)
 	}
 	return
 }
