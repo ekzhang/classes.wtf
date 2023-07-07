@@ -39,7 +39,7 @@ func main() {
 
 		default:
 			log.Printf("downloading from My.Harvard for year %d", *year)
-			log.Print("note: course data may be missing for years except the older current one")
+			log.Print("note: course data may be missing for years except the current one")
 			mh := datasource.SearchMh{Year: *year}
 			courses = append(courses, datasource.PaginatedDownload(&mh, 32)...)
 		}
