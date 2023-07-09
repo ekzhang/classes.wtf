@@ -4,31 +4,24 @@ package datasource
 
 import "strconv"
 
-var DivisionalAreas = [3]string{"Arts and Humanities", "Social Sciences", "Science & Engineering & Applied Science"}
+// Any crseAttrValue's that don't fall into these are labeled "None"
+var divisionalAreas = [3]string{"A&H", "SCI", "SOC"}
 
-func getGenEdInfo(intAttributes []interface{}) []string {
+func getGenEdInfo(intAttributes []any) []string {
 
-	// Type conversion, since we're dealing with an interface.
-	var attributes []map[string]interface {}
-	for _, item := range intAttributes {
-		attrMap, ok := item.(map[string]interface {}) 
-		if !ok {
-			panic("An item in courseAttributes is not of type map[string]interface")
-		}
-		attributes = append(attributes, attrMap)
-	}
-
+	// Get the gen-ed areas from the course attributes.
 	areas := []string{}
-	for _, attribute := range attributes {
-		if attribute["crseAttributeDescription"] == "FAS General Education" {
-			areas = append(areas, attribute["crseAttrValueDescription"].(string))
+	for _, item := range intAttributes {
+		attrMap := item.(map[string]any)
+		if attrMap["crseAttribute"] == "LGE" {
+			areas = append(areas, attrMap["crseAttrValue"].(string))
 		}
 	}
-	return areas // if empty, not a GENED. 
+	return areas // if empty, not a GENED.
 }
 
 func checkDivisionalArea(val string) bool {
-	for _, area := range DivisionalAreas {
+	for _, area := range divisionalAreas {
 		if val == area {
 			return true
 		}
@@ -39,24 +32,19 @@ func checkDivisionalArea(val string) bool {
 func getDivisionalInfo(intAttributes []interface{}) []string {
 
 	// Type conversion, since we're dealing with an interface.
-	var attributes []map[string]interface {}
-	for _, item := range intAttributes {
-		attrMap, ok := item.(map[string]interface {})
-		if !ok {
-			panic("An item in courseAttributes is not of type map[string]interface")
-		}
-		attributes = append(attributes, attrMap)
-	}
-
 	areas := []string{}
-	for _, attribute := range attributes {
-		divAttr, ok := attribute["crseAttrValueDescription"].(string)
-		if !ok {  continue  } // sometimes the value is nil. Just move to the next one.
-		if attribute["crseAttributeDescription"] == "FAS Divisional Distribution" && checkDivisionalArea(divAttr) {
+	for _, item := range intAttributes {
+		attrMap, _ := item.(map[string]any)
+		divAttr, ok := attrMap["crseAttrValue"].(string)
+		if !ok {
+			continue
+		} // sometimes the value is nil. Just move to the next one.
+
+		if attrMap["crseAttribute"] == "LDD" && checkDivisionalArea(divAttr) {
 			areas = append(areas, divAttr)
 		}
 	}
-	return areas // if empty, no divisional distributions. 
+	return areas // if empty, no divisional distributions.
 }
 
 func castAsInt(value string) uint32 {

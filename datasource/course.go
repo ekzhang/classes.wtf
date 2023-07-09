@@ -50,11 +50,11 @@ type Course struct {
 	// MeetingPatterns describes the course's meeting times.
 	MeetingPatterns []MeetingPattern `json:"meetingPatterns"`
 
-	// GenEdArea contains the GENED requirement(s), if any. Empty if not a GENED. 
-	GenEdArea[]string `json:"genEdArea"`
+	// GenEdArea contains the GENED requirement(s), if any. Empty if not a GENED.
+	GenEdArea []string `json:"genEdArea"`
 
-	// DivisionalDist contains the divisional distribution requirement(s), if any. 
-	DivisionalDist[]string `json:"divisionalDist"`
+	// DivisionalDist contains the divisional distribution requirement(s), if any.
+	DivisionalDist []string `json:"divisionalDist"`
 }
 
 // Instructor describes a faculty course instructor.
