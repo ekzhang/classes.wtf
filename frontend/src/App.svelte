@@ -28,16 +28,23 @@
   $: if (query) landing = false;
 
   let ay2023 = false;
+  let genEdChecks: boolean[] = new Array(4).fill(false);
+  let genEdAreas: string[] = ["HSI", "STS", "EC", "AC"];
 
   const { data, error, search } = createSearcher();
-  $: finalQuery =
-    (ay2023 ? "@academicYear:[2023 2023] " : "") + normalizeText(query);
-  $: search(finalQuery);
+  let finalQuery = "";
+
+  $: {
+    let genEdQuery = genEdChecks.map((checked, i) => checked ? "@genEdArea:{" + genEdAreas[i] + "} " : "").join("");
+    finalQuery = (ay2023 ? "@academicYear:[2023 2023] " : "") + normalizeText(query) + genEdQuery;
+    search(finalQuery);
+  }
 
   // Render courses incrementally in batches of 20 at a time, to avoid slowing
   // down the browser with too many elements at once.
   let showing = 0;
   let showingTimeout = 0;
+  let genEdQuery = false;
   function showMore() {
     const len = $data?.courses?.length ?? 0;
     if (showing < len) {
@@ -50,6 +57,7 @@
       window.clearTimeout(showingTimeout);
       showing = 0;
       showMore();
+      genEdQuery = (query.toLowerCase().indexOf("gened") !== -1);
     })
   );
 </script>
@@ -107,6 +115,16 @@
         irrelevant. WTF?</span
       >
     </p>
+
+    {#if genEdQuery}
+      <label class="flex text-sm mb-2">
+        <b>Filter by GENED tag:</b>  
+          <input class="mx-2" type="checkbox" bind:checked={genEdChecks[0]} /> HSI
+          <input class="mx-2" type="checkbox" bind:checked={genEdChecks[1]} /> STS
+          <input class="mx-2" type="checkbox" bind:checked={genEdChecks[2]} /> EC
+          <input class="mx-2" type="checkbox" bind:checked={genEdChecks[3]} /> AC
+      </label>
+    {/if}
 
     {#if !landing}
       <label class="flex text-sm mb-2">
