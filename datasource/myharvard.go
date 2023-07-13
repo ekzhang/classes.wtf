@@ -135,7 +135,7 @@ func (s *SearchMh) request(page uint) (props map[string]any, results map[string]
 		"Category":                  "HU_SCL_SCHEDULED_BRACKETED_COURSES",
 		"SearchPropertiesInResults": true,
 		"FacetsInResults":           false,
-		"SearchText":                yearFilter,
+		"SearchText":                yearFilter
 	}
 	data, err := mhSearchRaw(search)
 	if err != nil {
@@ -157,7 +157,6 @@ func (s *SearchMh) request(page uint) (props map[string]any, results map[string]
 			mhPageSize, realPageSize)
 		return
 	}
-	return
 }
 
 // Convert an academic year to a query selecting that year's terms.
