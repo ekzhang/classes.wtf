@@ -40,6 +40,7 @@ func (ts *TextSearch) init(data []datasource.Course) error {
 		"$.component", "AS", "component", "TAG",
 		"$.level", "AS", "level", "TAG",
 		"$.academicYear", "AS", "academicYear", "NUMERIC",
+		"$.genEdArea", "AS", "genEdArea", "TAG",
 	)
 
 	pipe := ts.rdb.Pipeline()
