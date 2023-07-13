@@ -3,6 +3,7 @@
 package datasource
 
 import "strconv"
+import "strings"
 
 // Any crseAttrValue's that don't fall into these are labeled "None"
 var divisionalAreas = [3]string{"A&H", "SCI", "SOC"}
@@ -14,7 +15,9 @@ func getGenEdInfo(intAttributes []any) []string {
 	for _, item := range intAttributes {
 		attrMap := item.(map[string]any)
 		if attrMap["crseAttribute"] == "LGE" {
-			areas = append(areas, attrMap["crseAttrValue"].(string))
+			strAttr := attrMap["crseAttrValue"].(string)
+			replacedStr := strings.Replace(strAttr, "&", "", -1)
+			areas = append(areas, replacedStr)
 		}
 	}
 	return areas // if empty, not a GENED.
@@ -41,7 +44,8 @@ func getDivisionalInfo(intAttributes []interface{}) []string {
 		} // sometimes the value is nil. Just move to the next one.
 
 		if attrMap["crseAttribute"] == "LDD" && checkDivisionalArea(divAttr) {
-			areas = append(areas, divAttr)
+			replacedStr := strings.Replace(divAttr, "&", "", -1)
+			areas = append(areas, replacedStr)
 		}
 	}
 	return areas // if empty, no divisional distributions.
