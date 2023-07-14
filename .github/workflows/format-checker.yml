@@ -16,7 +16,9 @@ jobs:
       - name: Compare gofmt output
         shell: bash
         run: |
+          : # Calculate gofmt diff.
           gofmt -d -l -s . |
+          : # If it exists, show diff and fail. Otherwise succeed.
           tee >([ -z "$(head -c1)" ])
 
   suggest-gofmt:
@@ -30,7 +32,7 @@ jobs:
       - name: Run gofmt
         run: gofmt -s -w .
 
-      - name: Suggest gofmt changes
+      - name: Suggest gofmt changes # in the form of a PR review
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: gofmt
