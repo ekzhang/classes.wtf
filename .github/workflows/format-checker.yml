@@ -14,10 +14,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Compare gofmt output
+        shell: bash
         run: |
-          set -o pipefail &&
-            gofmt -d -l -s . |
-            tee >([ -z "$(head -c1)" ])
+          gofmt -d -l -s . |
+          tee >([ -z "$(head -c1)" ])
 
   suggest-gofmt:
     name: Suggest gofmt changes
