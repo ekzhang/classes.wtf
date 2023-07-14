@@ -45,7 +45,7 @@ type Course struct {
 	Description string `json:"description"`
 
 	// GeneralEducation describes the general education requirements fulfilled.
-	GeneralEducation string `json:"generalEducation"`
+	GenEdAttr []string 
 
 	// Instructors describes each instructor in the course.
 	Instructors []Instructor `json:"instructors"`

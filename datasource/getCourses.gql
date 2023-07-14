@@ -26,7 +26,7 @@ query getCourses($perPage: Int!, $page: Int!) {
       componentFiltered
       courseDescription
       courseDescriptionLong
-      generalEducation
+      genEdAttr
       courseInstructors {
         id
         displayName
