@@ -1,0 +1,37 @@
+name: Format checker
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  compare-gofmt:
+    name: Compare gofmt output
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+
+      - name: Compare gofmt output
+        run: |
+          set -o pipefail &&
+            gofmt -d -l -s . |
+            tee >([ -z "$(head -c1)" ])
+
+  suggest-gofmt:
+    name: Suggest gofmt changes
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+
+      - name: Run gofmt
+        run: gofmt -s -w .
+
+      - name: Suggest gofmt changes
+        uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: gofmt
+          filter_mode: nofilter
