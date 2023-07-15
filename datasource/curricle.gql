@@ -31,6 +31,12 @@ query getCourses(
       componentFiltered
       courseDescription
       courseDescriptionLong
+      courseAttributes {
+        crseAttribute
+        crseAttributeDescription
+        crseAttrValue
+        crseAttrValueDescription
+      }
       courseInstructors {
         id
         displayName
