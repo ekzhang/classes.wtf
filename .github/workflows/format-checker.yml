@@ -8,10 +8,8 @@ jobs:
       - name: Check out
         uses: actions/checkout@v3
 
-      - name: Compare gofmt output
-        shell: bash
-        run: |
-          # Calculate gofmt diff.
-          gofmt -d -s . |
-          # If it exists, show diff and fail. Otherwise succeed.
-          tee >([ -z "$(head -c1)" ])
+      - name: Run gofmt
+        run: gofmt -s -w .
+
+      - name: Show differences
+        run: git diff --exit-code
