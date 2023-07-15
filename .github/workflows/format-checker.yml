@@ -1,8 +1,8 @@
 name: Format checker
 on: push
 jobs:
-  ensure-gofmt:
-    name: Ensure gofmt matches
+  gofmt:
+    name: gofmt
     runs-on: ubuntu-latest
     steps:
       - name: Check out
