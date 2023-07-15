@@ -12,6 +12,6 @@ jobs:
         shell: bash
         run: |
           # Calculate gofmt diff.
-          gofmt -d -l -s . |
+          gofmt -d -s . |
           # If it exists, show diff and fail. Otherwise succeed.
           tee >([ -z "$(head -c1)" ])
