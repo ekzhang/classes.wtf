@@ -29,7 +29,7 @@ func checkDivisionalArea(val string) bool {
 	return false
 }
 
-func getDivisionalInfo(intAttributes []interface{}) []string {
+func getDivisionalInfo(intAttributes []any) []string {
 
 	// Type conversion, since we're dealing with an interface.
 	areas := []string{}
