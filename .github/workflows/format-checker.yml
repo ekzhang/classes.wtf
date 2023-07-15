@@ -11,5 +11,5 @@ jobs:
       - name: Run gofmt
         run: gofmt -s -w .
 
-      - name: Show differences
+      - name: Ensure gofmt matches
         run: git diff --exit-code
