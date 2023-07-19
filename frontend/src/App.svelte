@@ -34,9 +34,23 @@
   const { data, error, search } = createSearcher();
   let finalQuery = "";
 
+  // Search for GENED areas, if boxes are checked and "gened" remains in the search box. 
   $: {
-    let genEdQuery = genEdChecks.map((checked, i) => checked ? "@genEdArea:{" + genEdAreas[i] + "} " : "").join("");
-    finalQuery = (ay2023 ? "@academicYear:[2023 2023] " : "") + normalizeText(query) + genEdQuery;
+    // Get | separated string of checked GENED areas. 
+    let stringTags: string[] = genEdChecks.map((checked, i) => checked ? genEdAreas[i] : "");
+    let genEdTagArr: string[] = []; 
+    stringTags.forEach(element => {
+      if (element) { genEdTagArr.push(element)}
+    });
+    let genEdSearchQuery = genEdTagArr.length ? " @genEdArea:{" + genEdTagArr.join("|") + "} " : ""
+
+    // Add tags to query, if boxes checked. 
+    finalQuery = genEdQuery ? 
+      (ay2023 ? "@academicYear:[2023 2023] " : "") + normalizeText(query) + genEdSearchQuery : 
+      (ay2023 ? "@academicYear:[2023 2023] " : "") + normalizeText(query); 
+
+    // If user wants only GENEDs. 
+    finalQuery = (query.indexOf("GENED") !== -1) ? finalQuery + " @subject:GENED " : finalQuery; 
     search(finalQuery);
   }
 
@@ -58,6 +72,7 @@
       showing = 0;
       showMore();
       genEdQuery = (query.toLowerCase().indexOf("gened") !== -1);
+      genEdChecks = genEdQuery ? genEdChecks : genEdChecks.fill(false); 
     })
   );
 </script>
@@ -79,13 +94,17 @@
           names. You can also look for exact textual phrases (like
           <QueryLink bind:query value={`"creative process"`} />) and prefix
           matches (such as
-          <QueryLink bind:query value={`genom*`} />).
+          <QueryLink bind:query value={`genom*`} />). 
         </p>
         <p>
           Filter by specific attributes like
           <QueryLink bind:query value={`@subject:compsci`} />,
           <QueryLink bind:query value={`@semester:"fall 2022"`} />, and
-          <QueryLink bind:query value={`@level:{graduate}`} />.
+          <QueryLink bind:query value={`@level:{graduate}`} />. 
+        </p>
+        <p>
+          Search for GENED courses specifically by typing "<QueryLink bind:query value={`GENED`} />", 
+          and filter by checking the boxes below.
         </p>
       </div>
     {/if}
@@ -117,13 +136,13 @@
     </p>
 
     {#if genEdQuery}
-      <label class="flex text-sm mb-2">
+      <div class="flex text-sm mb-2">
         <b>Filter by GENED tag:</b>  
-          <input class="mx-2" type="checkbox" bind:checked={genEdChecks[0]} /> HSI
-          <input class="mx-2" type="checkbox" bind:checked={genEdChecks[1]} /> STS
-          <input class="mx-2" type="checkbox" bind:checked={genEdChecks[2]} /> EC
-          <input class="mx-2" type="checkbox" bind:checked={genEdChecks[3]} /> AC
-      </label>
+          <label class="flex items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[0]} /> HSI </label>
+          <label class="flex items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[1]} /> STS </label>
+          <label class="flex items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[2]} /> E&C </label>
+          <label class="flex items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[3]} /> A&C </label>
+      </div>
     {/if}
 
     {#if !landing}
