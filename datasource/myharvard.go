@@ -262,8 +262,8 @@ func mhTo24hr(s string) string {
 func mhMakeMeetingPattern(mon, tues, wed, thurs, fri, sat, sun,
 	startTime, endTime, startDate, endDate any) *MeetingPattern {
 	isYes := func(value any) bool {
-		value, ok := value.(string)
-		return ok && value == "Y"
+		str, ok := value.(string)
+		return ok && str == "Y"
 	}
 	if isYes(mon) || isYes(tues) || isYes(wed) ||
 		isYes(thurs) || isYes(fri) || isYes(sat) || isYes(sun) {
