@@ -54,7 +54,6 @@ func (s *SearchMh) Fetch(page uint) (courses []Course, err error) {
 		hsh.Write([]byte(obj["Key"].(string)))
 		id := hex.EncodeToString(hsh.Sum(nil)) // Use md5(Key) as a unique ID.
 
-		// TODO: Can you get emails from the API response?
 		instructors := []Instructor{}
 		switch v := obj["IS_SCL_DESCR_IS_SCL_DESCRL"].(type) {
 		case string:
