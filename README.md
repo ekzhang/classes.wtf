@@ -45,6 +45,11 @@ go run . download -year 2024  # -> data/courses-2024.json
 
 Unfortunately, My.Harvard does not allow you to view courses from previous academic years, so years between 2023 and the current one will probably not return any data. For those, you can download the appropriate preloaded datasets from our [public S3 bucket](https://s3.amazonaws.com/classes.wtf).
 
+**Historical notes about preloaded data:**
+
+- We don't have data on divisional distributions for AY 2023, from Fall 2022 to Spring 2023.
+- Some of the courses in Spring 2023 are missing because they were added after we initially indexed them from the public data source, and we have no way of backfilling.
+
 ### Combining data
 
 Once you have the year-by-year course data, you can combine them to form a single `courses.json` file with all of the courses, which can be searched by the webapp.
