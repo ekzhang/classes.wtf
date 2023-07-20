@@ -90,6 +90,18 @@ func (s *SearchMh) Fetch(page uint) (courses []Course, err error) {
 		if !ok {
 			level = ""
 		}
+
+		genEdAreaRaw := obj["CRSE_ATTR_VALUE_HU_GE_ATTR"]
+		genEdArea := parseStringOrList(genEdAreaRaw)
+
+		divisionalDistRaw := obj["CRSE_ATTR_VALUE_HU_LDD_ATTR"]
+		divisonalDist := []string{}
+		for _, dist := range parseStringOrList(divisionalDistRaw) {
+			if checkDivisionalArea(dist) {
+				divisonalDist = append(divisonalDist, dist)
+			}
+		}
+
 		courses = append(courses, Course{
 			Id:                 id,
 			ExternalId:         castAsInt(obj["CRSE_ID"].(string)),
@@ -107,6 +119,8 @@ func (s *SearchMh) Fetch(page uint) (courses []Course, err error) {
 			Description:        sanitizeHtml(obj["IS_SCL_DESCR"].(string)),
 			Instructors:        instructors,
 			MeetingPatterns:    meetingPatterns,
+			GenEdArea:          genEdArea,
+			DivisionalDist:     divisonalDist,
 		})
 	}
 
@@ -247,20 +261,24 @@ func mhTo24hr(s string) string {
 
 func mhMakeMeetingPattern(mon, tues, wed, thurs, fri, sat, sun,
 	startTime, endTime, startDate, endDate any) *MeetingPattern {
-	if mon.(string) == "Y" || tues.(string) == "Y" || wed.(string) == "Y" ||
-		thurs.(string) == "Y" || fri.(string) == "Y" || sat.(string) == "Y" || sun.(string) == "Y" {
+	isYes := func(value any) bool {
+		value, ok := value.(string)
+		return ok && value == "Y"
+	}
+	if isYes(mon) || isYes(tues) || isYes(wed) ||
+		isYes(thurs) || isYes(fri) || isYes(sat) || isYes(sun) {
 		return &MeetingPattern{
 			StartTime:        mhTo24hr(startTime.(string)),
 			EndTime:          mhTo24hr(endTime.(string)),
 			StartDate:        startDate.(string)[:10], // YYYY-MM-DD
 			EndDate:          endDate.(string)[:10],
-			MeetsOnMonday:    mon.(string) == "Y",
-			MeetsOnTuesday:   tues.(string) == "Y",
-			MeetsOnWednesday: wed.(string) == "Y",
-			MeetsOnThursday:  thurs.(string) == "Y",
-			MeetsOnFriday:    fri.(string) == "Y",
-			MeetsOnSaturday:  sat.(string) == "Y",
-			MeetsOnSunday:    sun.(string) == "Y",
+			MeetsOnMonday:    isYes(mon),
+			MeetsOnTuesday:   isYes(tues),
+			MeetsOnWednesday: isYes(wed),
+			MeetsOnThursday:  isYes(thurs),
+			MeetsOnFriday:    isYes(fri),
+			MeetsOnSaturday:  isYes(sat),
+			MeetsOnSunday:    isYes(sun),
 		}
 	} else {
 		return nil
