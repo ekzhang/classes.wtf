@@ -5,14 +5,14 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM golang:1.20 AS builder
+FROM golang:1.20-bookworm AS builder
 WORKDIR /go/app
 COPY . .
 RUN go build -buildvcs=false
 
 FROM redis/redis-stack-server:7.0.6-RC8 AS redis-stack
 
-FROM redis:7-bullseye
+FROM redis:7-bookworm
 RUN ln -sf /bin/bash /bin/sh
 RUN apt-get update && apt-get install -y ca-certificates procps && apt-get clean
 COPY --from=redis-stack /opt/redis-stack/lib/redisearch.so /opt/redis-stack/lib/redisearch.so
