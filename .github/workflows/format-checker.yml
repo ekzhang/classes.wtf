@@ -1,0 +1,15 @@
+name: Format checker
+on: push
+jobs:
+  gofmt:
+    name: gofmt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+
+      - name: Run gofmt
+        run: gofmt -s -w .
+
+      - name: Ensure gofmt matches
+        run: git diff --color --exit-code
