@@ -145,7 +145,6 @@ func mhGetCourses(pageSize, page uint) (count int64, courses []Course, err error
 				}
 			}
 		}
-			}
 
 		courses = append(courses, Course{
 			Id:                 id,
@@ -168,9 +167,6 @@ func mhGetCourses(pageSize, page uint) (count int64, courses []Course, err error
 			GenEdAttr: 			genEdAttr
 		})
 	}
-
-	return
-}
 
 func castAsInt(value string) uint32 {
 	x, err := strconv.ParseInt(value, 10, 64)
