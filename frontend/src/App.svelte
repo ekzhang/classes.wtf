@@ -34,6 +34,14 @@
   const { data, error, search } = createSearcher();
   let finalQuery = "";
 
+  // See if user searches for gen-eds. 
+  $: genEdQuery = query.toLowerCase().includes("gened");
+
+  // As soon as the user no longer searches for gen-eds, get rid of checked boxes. 
+  $: if (!genEdQuery) {
+    genEdChecks.fill(false);
+  }
+
   // Search for GENED areas, if boxes are checked and "gened" remains in the search box. 
   $: {
     // Get | separated string of checked GENED areas. 
@@ -58,7 +66,7 @@
   // down the browser with too many elements at once.
   let showing = 0;
   let showingTimeout = 0;
-  let genEdQuery = false;
+
   function showMore() {
     const len = $data?.courses?.length ?? 0;
     if (showing < len) {
@@ -71,8 +79,6 @@
       window.clearTimeout(showingTimeout);
       showing = 0;
       showMore();
-      genEdQuery = (query.toLowerCase().indexOf("gened") !== -1);
-      genEdChecks = genEdQuery ? genEdChecks : genEdChecks.fill(false); 
     })
   );
 </script>
