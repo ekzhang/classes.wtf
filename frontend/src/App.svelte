@@ -34,31 +34,39 @@
   const { data, error, search } = createSearcher();
   let finalQuery = "";
 
-  // See if user searches for gen-eds. 
+  // See if user searches for gen-eds.
   $: genEdQuery = query.toLowerCase().includes("gened");
 
-  // As soon as the user no longer searches for gen-eds, get rid of checked boxes. 
+  // As soon as the user no longer searches for gen-eds, get rid of checked boxes.
   $: if (!genEdQuery) {
     genEdChecks.fill(false);
   }
 
-  // Search for GENED areas, if boxes are checked and "gened" remains in the search box. 
+  // Search for GENED areas, if boxes are checked and "gened" remains in the search box.
   $: {
-    // Get | separated string of checked GENED areas. 
-    let stringTags: string[] = genEdChecks.map((checked, i) => checked ? genEdAreas[i] : "");
-    let genEdTagArr: string[] = []; 
-    stringTags.forEach(element => {
-      if (element) { genEdTagArr.push(element)}
+    // Get | separated string of checked GENED areas.
+    let stringTags: string[] = genEdChecks.map((checked, i) =>
+      checked ? genEdAreas[i] : ""
+    );
+    let genEdTagArr: string[] = [];
+    stringTags.forEach((element) => {
+      if (element) {
+        genEdTagArr.push(element);
+      }
     });
-    let genEdSearchQuery = genEdTagArr.length ? " @genEdArea:{" + genEdTagArr.join("|") + "} " : ""
+    let genEdSearchQuery = genEdTagArr.length
+      ? " @genEdArea:{" + genEdTagArr.join("|") + "} "
+      : "";
 
-    // Add relevant year/gen-ed tags to query, if boxes checked. 
-    finalQuery = genEdQuery ? 
-      (ay2024 ? "@academicYear:[2024 2024] " : "") + normalizeText(query) + genEdSearchQuery : 
-      (ay2024 ? "@academicYear:[2024 2024] " : "") + normalizeText(query); 
+    // Add relevant year/gen-ed tags to query, if boxes checked.
+    finalQuery = genEdQuery
+      ? (ay2024 ? "@academicYear:[2024 2024] " : "") +
+        normalizeText(query) +
+        genEdSearchQuery
+      : (ay2024 ? "@academicYear:[2024 2024] " : "") + normalizeText(query);
 
-    // If your query includes "gened", get only gen-ed classes. 
-    finalQuery = genEdQuery ? finalQuery + " @subject:GENED " : finalQuery; 
+    // If your query includes "gened", get only gen-ed classes.
+    finalQuery = genEdQuery ? finalQuery + " @subject:GENED " : finalQuery;
     search(finalQuery);
   }
 
@@ -100,16 +108,19 @@
           names. You can also look for exact textual phrases (like
           <QueryLink bind:query value={`"creative process"`} />) and prefix
           matches (such as
-          <QueryLink bind:query value={`genom*`} />). 
+          <QueryLink bind:query value={`genom*`} />).
         </p>
         <p>
           Filter by specific attributes like
           <QueryLink bind:query value={`@subject:compsci`} />,
           <QueryLink bind:query value={`@semester:"fall 2022"`} />, and
-          <QueryLink bind:query value={`@level:{graduate}`} />. 
+          <QueryLink bind:query value={`@level:{graduate}`} />.
         </p>
         <p>
-          If you're looking for Gen Ed courses, add "<QueryLink bind:query value={`gened`} />" to your search.
+          If you're looking for Gen Ed courses, add "<QueryLink
+            bind:query
+            value={`gened`}
+          />" to your search.
         </p>
       </div>
     {/if}
@@ -142,11 +153,35 @@
 
     {#if genEdQuery}
       <div class="flex text-sm mb-2">
-        <b>Filter by GENED tag:</b>  
-          <label class="flex mr-1 items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[0]} />HSI</label>
-          <label class="flex mr-1 items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[1]} />STS</label>
-          <label class="flex mr-1 items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[2]} />E&C</label>
-          <label class="flex mr-1 items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[3]} />A&C</label>
+        <b>Filter by GENED tag:</b>
+        <label class="flex mr-1 items-center"
+          ><input
+            class="mx-2 align-middle"
+            type="checkbox"
+            bind:checked={genEdChecks[0]}
+          />HSI</label
+        >
+        <label class="flex mr-1 items-center"
+          ><input
+            class="mx-2 align-middle"
+            type="checkbox"
+            bind:checked={genEdChecks[1]}
+          />STS</label
+        >
+        <label class="flex mr-1 items-center"
+          ><input
+            class="mx-2 align-middle"
+            type="checkbox"
+            bind:checked={genEdChecks[2]}
+          />E&C</label
+        >
+        <label class="flex mr-1 items-center"
+          ><input
+            class="mx-2 align-middle"
+            type="checkbox"
+            bind:checked={genEdChecks[3]}
+          />A&C</label
+        >
       </div>
     {/if}
 
