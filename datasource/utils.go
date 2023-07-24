@@ -17,7 +17,7 @@ func getGenEdInfo(intAttributes []any) []string {
 	for _, item := range intAttributes {
 		attrMap := item.(map[string]any)
 		if attrMap["crseAttribute"] == "LGE" {
-      // Replace ampersands, for downstream parsing. 
+      		// Replace ampersands, for downstream parsing. 
 			strAttr := attrMap["crseAttrValue"].(string)
 			replacedStr := strings.Replace(strAttr, "&", "", -1)
 			areas = append(areas, replacedStr)
