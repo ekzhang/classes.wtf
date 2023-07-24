@@ -12,12 +12,12 @@ import (
 var divisionalAreas = [3]string{"A&H", "SCI", "SOC"}
 
 func getGenEdInfo(intAttributes []any) []string {
-
 	// Get the gen-ed areas from the course attributes.
 	areas := []string{}
 	for _, item := range intAttributes {
 		attrMap := item.(map[string]any)
 		if attrMap["crseAttribute"] == "LGE" {
+      // Replace ampersands, for downstream parsing. 
 			strAttr := attrMap["crseAttrValue"].(string)
 			replacedStr := strings.Replace(strAttr, "&", "", -1)
 			areas = append(areas, replacedStr)
@@ -35,8 +35,7 @@ func checkDivisionalArea(val string) bool {
 	return false
 }
 
-func getDivisionalInfo(intAttributes []interface{}) []string {
-
+func getDivisionalInfo(intAttributes []any) []string {
 	// Type conversion, since we're dealing with an interface.
 	areas := []string{}
 	for _, item := range intAttributes {

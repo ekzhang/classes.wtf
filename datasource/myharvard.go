@@ -90,6 +90,18 @@ func (s *SearchMh) Fetch(page uint) (courses []Course, err error) {
 		if !ok {
 			level = ""
 		}
+
+		genEdAreaRaw := obj["CRSE_ATTR_VALUE_HU_GE_ATTR"]
+		genEdArea := parseStringOrList(genEdAreaRaw)
+
+		divisionalDistRaw := obj["CRSE_ATTR_VALUE_HU_LDD_ATTR"]
+		divisonalDist := []string{}
+		for _, dist := range parseStringOrList(divisionalDistRaw) {
+			if checkDivisionalArea(dist) {
+				divisonalDist = append(divisonalDist, dist)
+			}
+		}
+
 		courses = append(courses, Course{
 			Id:                 id,
 			ExternalId:         castAsInt(obj["CRSE_ID"].(string)),
@@ -107,6 +119,8 @@ func (s *SearchMh) Fetch(page uint) (courses []Course, err error) {
 			Description:        sanitizeHtml(obj["IS_SCL_DESCR"].(string)),
 			Instructors:        instructors,
 			MeetingPatterns:    meetingPatterns,
+			GenEdArea:          genEdArea,
+			DivisionalDist:     divisonalDist,
 		})
 	}
 
@@ -114,12 +128,8 @@ func (s *SearchMh) Fetch(page uint) (courses []Course, err error) {
 }
 
 func (s *SearchMh) request(page uint) (props map[string]any, results map[string]any, err error) {
-	var yearFilter string
-
-	if s.Year == 2023 {
-		yearFilter = `(STRM:"2228" | STRM:"2232")`
-	} else {
-		err = fmt.Errorf("no filter set for year %v", s.Year)
+	yearFilter, err := mhGetYearFilter(s.Year)
+	if err != nil {
 		return
 	}
 
@@ -160,6 +170,20 @@ func (s *SearchMh) request(page uint) (props map[string]any, results map[string]
 		err = fmt.Errorf("passed page size of %v, but received page size of %v",
 			mhPageSize, realPageSize)
 		return
+	}
+	return
+}
+
+// Convert an academic year to a query selecting that year's terms.
+// Example: 2024 selects Fall 2023 and Spring 2024.
+func mhGetYearFilter(year int) (yearFilter string, err error) {
+	switch year {
+	case 2024:
+		yearFilter = `(STRM:"2238" | STRM:"2242")`
+	case 2023:
+		yearFilter = `(STRM:"2228" | STRM:"2232")`
+	default:
+		err = fmt.Errorf("no filter set for year %v", year)
 	}
 	return
 }
@@ -237,20 +261,24 @@ func mhTo24hr(s string) string {
 
 func mhMakeMeetingPattern(mon, tues, wed, thurs, fri, sat, sun,
 	startTime, endTime, startDate, endDate any) *MeetingPattern {
-	if mon.(string) == "Y" || tues.(string) == "Y" || wed.(string) == "Y" ||
-		thurs.(string) == "Y" || fri.(string) == "Y" || sat.(string) == "Y" || sun.(string) == "Y" {
+	isYes := func(value any) bool {
+		str, ok := value.(string)
+		return ok && str == "Y"
+	}
+	if isYes(mon) || isYes(tues) || isYes(wed) ||
+		isYes(thurs) || isYes(fri) || isYes(sat) || isYes(sun) {
 		return &MeetingPattern{
 			StartTime:        mhTo24hr(startTime.(string)),
 			EndTime:          mhTo24hr(endTime.(string)),
 			StartDate:        startDate.(string)[:10], // YYYY-MM-DD
 			EndDate:          endDate.(string)[:10],
-			MeetsOnMonday:    mon.(string) == "Y",
-			MeetsOnTuesday:   tues.(string) == "Y",
-			MeetsOnWednesday: wed.(string) == "Y",
-			MeetsOnThursday:  thurs.(string) == "Y",
-			MeetsOnFriday:    fri.(string) == "Y",
-			MeetsOnSaturday:  sat.(string) == "Y",
-			MeetsOnSunday:    sun.(string) == "Y",
+			MeetsOnMonday:    isYes(mon),
+			MeetsOnTuesday:   isYes(tues),
+			MeetsOnWednesday: isYes(wed),
+			MeetsOnThursday:  isYes(thurs),
+			MeetsOnFriday:    isYes(fri),
+			MeetsOnSaturday:  isYes(sat),
+			MeetsOnSunday:    isYes(sun),
 		}
 	} else {
 		return nil
