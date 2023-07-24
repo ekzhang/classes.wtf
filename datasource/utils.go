@@ -3,6 +3,7 @@
 package datasource
 
 import (
+	"log"
 	"strconv"
 	"strings"
 )
@@ -39,7 +40,7 @@ func getDivisionalInfo(intAttributes []interface{}) []string {
 	// Type conversion, since we're dealing with an interface.
 	areas := []string{}
 	for _, item := range intAttributes {
-		attrMap, _ := item.(map[string]any)
+		attrMap := item.(map[string]any)
 		divAttr, ok := attrMap["crseAttrValue"].(string)
 		if !ok {
 			continue
