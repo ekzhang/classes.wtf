@@ -52,13 +52,13 @@
     });
     let genEdSearchQuery = genEdTagArr.length ? " @genEdArea:{" + genEdTagArr.join("|") + "} " : ""
 
-    // Add tags to query, if boxes checked. 
+    // Add relevant year/gen-ed tags to query, if boxes checked. 
     finalQuery = genEdQuery ? 
       (ay2023 ? "@academicYear:[2023 2023] " : "") + normalizeText(query) + genEdSearchQuery : 
       (ay2023 ? "@academicYear:[2023 2023] " : "") + normalizeText(query); 
 
-    // If user wants only GENEDs. 
-    finalQuery = (query.indexOf("GENED") !== -1) ? finalQuery + " @subject:GENED " : finalQuery; 
+    // If your query includes "gened", get only gen-ed classes. 
+    finalQuery = genEdQuery ? finalQuery + " @subject:GENED " : finalQuery; 
     search(finalQuery);
   }
 
@@ -109,8 +109,7 @@
           <QueryLink bind:query value={`@level:{graduate}`} />. 
         </p>
         <p>
-          Search for GENED courses specifically by typing "<QueryLink bind:query value={`GENED`} />", 
-          and filter by checking the boxes below.
+          If you're looking for Gen Ed courses, add "<QueryLink bind:query value={`gened`} />" to your search.
         </p>
       </div>
     {/if}
@@ -144,10 +143,10 @@
     {#if genEdQuery}
       <div class="flex text-sm mb-2">
         <b>Filter by GENED tag:</b>  
-          <label class="flex items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[0]} /> HSI </label>
-          <label class="flex items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[1]} /> STS </label>
-          <label class="flex items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[2]} /> E&C </label>
-          <label class="flex items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[3]} /> A&C </label>
+          <label class="flex mr-1 items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[0]} />HSI</label>
+          <label class="flex mr-1 items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[1]} />STS</label>
+          <label class="flex mr-1 items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[2]} />E&C</label>
+          <label class="flex mr-1 items-center"><input class="mx-2 align-middle" type="checkbox" bind:checked={genEdChecks[3]} />A&C</label>
       </div>
     {/if}
 
