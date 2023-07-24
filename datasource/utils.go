@@ -2,8 +2,10 @@
 
 package datasource
 
-import "strconv"
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 // Any crseAttrValue's that don't fall into these are labeled "None"
 var divisionalAreas = [3]string{"A&H", "SCI", "SOC"}
@@ -49,6 +51,26 @@ func getDivisionalInfo(intAttributes []interface{}) []string {
 		}
 	}
 	return areas // if empty, no divisional distributions.
+}
+
+// Parses either a single JSON string or a list of strings.
+func parseStringOrList(value any) []string {
+	switch value := value.(type) {
+	case string:
+		return []string{value}
+	case []any:
+		// convert []any to []string
+		returnValue := make([]string, 0, len(value))
+		for _, v := range value {
+			returnValue = append(returnValue, v.(string))
+		}
+		return returnValue
+	case nil:
+		return []string{}
+	default:
+		log.Panicf("Invalid type for parseStringOrList: %T", value)
+		return nil
+	}
 }
 
 func castAsInt(value string) uint32 {
