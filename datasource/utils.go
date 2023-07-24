@@ -58,12 +58,14 @@ func getDivisionalInfo(intAttributes []any) []string {
 func parseStringOrList(value any) []string {
 	switch value := value.(type) {
 	case string:
-		return []string{value}
+		replacedStr := strings.Replace(value, "&", "", -1) // remove ampersands
+		return []string{replacedStr}
 	case []any:
 		// convert []any to []string
 		returnValue := make([]string, 0, len(value))
 		for _, v := range value {
-			returnValue = append(returnValue, v.(string))
+			replacedStr := strings.Replace(v.(string), "&", "", -1)
+			returnValue = append(returnValue, replacedStr)
 		}
 		return returnValue
 	case nil:
