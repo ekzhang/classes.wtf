@@ -33,6 +33,7 @@ export type CourseData = {
     meetsOnSaturday: boolean;
     meetsOnSunday: boolean;
   }[];
+  genEdArea: string[];
 };
 
 type SearchResult = {
