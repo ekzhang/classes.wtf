@@ -117,10 +117,10 @@
           <QueryLink bind:query value={`@level:{graduate}`} />.
         </p>
         <p>
-          If you're looking for Gen Ed courses, add "<QueryLink
+          If you're looking for Gen Ed courses, add <QueryLink
             bind:query
             value={`gened`}
-          />" to your search.
+          /> to your search.
         </p>
       </div>
     {/if}
