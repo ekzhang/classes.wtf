@@ -16,17 +16,8 @@ export type CourseData = {
   classSection: string;
   component: string;
   description: string;
-  genEdAreas: {
-    hsi: boolean;
-    sts: boolean;
-    ac: boolean;
-    ec: boolean;
-  }[];
-  divisionalDistribution: {
-    ah: boolean;
-    ss: boolean;
-    sci: boolean;
-  }[];
+  genEdAreas: string[];
+  divisionalDistribution: string[];
   instructors: {
     name: string;
     email: string;
