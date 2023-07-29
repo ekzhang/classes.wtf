@@ -11,7 +11,7 @@ import (
 // Any crseAttrValue's that don't fall into these are labeled "None"
 var divisionalAreas = [3]string{"A&H", "SCI", "SOC"}
 
-func getGenEdInfo(intAttributes []any) []string {
+func getCurricleGenEdInfo(intAttributes []any) []string {
 	// Get the gen-ed areas from the course attributes.
 	areas := []string{}
 	for _, item := range intAttributes {
@@ -36,7 +36,7 @@ func checkDivisionalArea(val string) bool {
 	return false
 }
 
-func getDivisionalInfo(intAttributes []any) []string {
+func getCurricleDivisionalInfo(intAttributes []any) []string {
 	// Type conversion, since we're dealing with an interface.
 	areas := []string{}
 	for _, item := range intAttributes {
@@ -58,14 +58,12 @@ func getDivisionalInfo(intAttributes []any) []string {
 func parseStringOrList(value any) []string {
 	switch value := value.(type) {
 	case string:
-		replacedStr := strings.Replace(value, "&", "", -1) // remove ampersands
-		return []string{replacedStr}
+		return []string{value}
 	case []any:
 		// convert []any to []string
 		returnValue := make([]string, 0, len(value))
 		for _, v := range value {
-			replacedStr := strings.Replace(v.(string), "&", "", -1)
-			returnValue = append(returnValue, replacedStr)
+			returnValue = append(returnValue, v.(string))
 		}
 		return returnValue
 	case nil:
@@ -73,6 +71,12 @@ func parseStringOrList(value any) []string {
 	default:
 		log.Panicf("Invalid type for parseStringOrList: %T", value)
 		return nil
+	}
+}
+
+func removeAmpersandFromStrList(list []string) {
+	for i, item := range list {
+		list[i] = strings.Replace(item, "&", "", -1)
 	}
 }
 
