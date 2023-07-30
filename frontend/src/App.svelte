@@ -59,11 +59,9 @@
       : "";
 
     // Add relevant year/gen-ed tags to query, if boxes checked.
-    finalQuery = genEdQuery
-      ? (ay2024 ? "@academicYear:[2024 2024] " : "") +
-        normalizeText(query) +
-        genEdSearchQuery
-      : (ay2024 ? "@academicYear:[2024 2024] " : "") + normalizeText(query);
+    finalQuery = (ay2024 ? "@academicYear:[2024 2024] " : "") + 
+      normalizeText(query) + 
+      (genEdQuery ? genEdSearchQuery : "");
 
     // If your query includes "gened", get only gen-ed classes.
     finalQuery = genEdQuery ? finalQuery + " @subject:GENED " : finalQuery;
@@ -154,34 +152,15 @@
     {#if genEdQuery}
       <div class="flex text-sm mb-2">
         <b>Filter by GENED tag:</b>
-        <label class="flex mr-1 items-center"
-          ><input
-            class="mx-2 align-middle"
-            type="checkbox"
-            bind:checked={genEdChecks[0]}
-          />HSI</label
-        >
-        <label class="flex mr-1 items-center"
-          ><input
-            class="mx-2 align-middle"
-            type="checkbox"
-            bind:checked={genEdChecks[1]}
-          />STS</label
-        >
-        <label class="flex mr-1 items-center"
-          ><input
-            class="mx-2 align-middle"
-            type="checkbox"
-            bind:checked={genEdChecks[2]}
-          />E&C</label
-        >
-        <label class="flex mr-1 items-center"
-          ><input
-            class="mx-2 align-middle"
-            type="checkbox"
-            bind:checked={genEdChecks[3]}
-          />A&C</label
-        >
+        {#each genEdAreas as area, i}
+          <label class="flex mr-1 items-center"
+            ><input
+              class="mx-2 align-middle"
+              type="checkbox"
+              bind:checked={genEdChecks[i]}
+            />{area}</label
+          >
+        {/each}
       </div>
     {/if}
 
