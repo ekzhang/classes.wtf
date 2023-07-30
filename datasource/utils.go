@@ -5,18 +5,23 @@ package datasource
 import (
 	"log"
 	"strconv"
+	"strings"
 )
 
 // Any crseAttrValue's that don't fall into these are labeled "None"
 var divisionalAreas = [3]string{"A&H", "SCI", "SOC"}
 
-func getGenEdInfo(intAttributes []any) []string {
+func getCurricleGenEdInfo(intAttributes []any) []string {
 	// Get the gen-ed areas from the course attributes.
 	areas := []string{}
 	for _, item := range intAttributes {
 		attrMap := item.(map[string]any)
+
+		// Replace ampersands, for downstream parsing.
 		if attrMap["crseAttribute"] == "LGE" {
-			areas = append(areas, attrMap["crseAttrValue"].(string))
+			strAttr := attrMap["crseAttrValue"].(string)
+			replacedStr := strings.Replace(strAttr, "&", "", -1)
+			areas = append(areas, replacedStr)
 		}
 	}
 	return areas // if empty, not a GENED.
@@ -31,7 +36,7 @@ func checkDivisionalArea(val string) bool {
 	return false
 }
 
-func getDivisionalInfo(intAttributes []any) []string {
+func getCurricleDivisionalInfo(intAttributes []any) []string {
 	// Type conversion, since we're dealing with an interface.
 	areas := []string{}
 	for _, item := range intAttributes {
@@ -42,7 +47,8 @@ func getDivisionalInfo(intAttributes []any) []string {
 		} // sometimes the value is nil. Just move to the next one.
 
 		if attrMap["crseAttribute"] == "LDD" && checkDivisionalArea(divAttr) {
-			areas = append(areas, divAttr)
+			replacedStr := strings.Replace(divAttr, "&", "", -1)
+			areas = append(areas, replacedStr)
 		}
 	}
 	return areas // if empty, no divisional distributions.
@@ -65,6 +71,12 @@ func parseStringOrList(value any) []string {
 	default:
 		log.Panicf("Invalid type for parseStringOrList: %T", value)
 		return nil
+	}
+}
+
+func removeAmpersandFromStrList(list []string) {
+	for i, item := range list {
+		list[i] = strings.Replace(item, "&", "", -1)
 	}
 }
 

@@ -28,16 +28,52 @@
   $: if (query) landing = false;
 
   let ay2024 = true;
+  let genEdChecks: boolean[] = new Array(4).fill(false);
+  let genEdAreas: string[] = ["HSI", "STS", "EC", "AC"];
 
   const { data, error, search } = createSearcher();
-  $: finalQuery =
-    (ay2024 ? "@academicYear:[2024 2024] " : "") + normalizeText(query);
-  $: search(finalQuery);
+  let finalQuery = "";
+
+  // See if user searches for gen-eds.
+  $: genEdQuery = query.toLowerCase().includes("gened");
+
+  // As soon as the user no longer searches for gen-eds, get rid of checked boxes.
+  $: if (!genEdQuery) {
+    genEdChecks.fill(false);
+  }
+
+  // Search for GENED areas, if boxes are checked and "gened" remains in the search box.
+  $: {
+    // Get | separated string of checked GENED areas.
+    let stringTags: string[] = genEdChecks.map((checked, i) =>
+      checked ? genEdAreas[i] : ""
+    );
+    let genEdTagArr: string[] = [];
+    stringTags.forEach((element) => {
+      if (element) {
+        genEdTagArr.push(element);
+      }
+    });
+    let genEdSearchQuery = genEdTagArr.length
+      ? " @genEdArea:{" + genEdTagArr.join("|") + "} "
+      : "";
+
+    // Add relevant year/gen-ed tags to query, if boxes checked.
+    finalQuery =
+      (ay2024 ? "@academicYear:[2024 2024] " : "") +
+      normalizeText(query) +
+      (genEdQuery ? genEdSearchQuery : "");
+
+    // If your query includes "gened", get only gen-ed classes.
+    finalQuery = genEdQuery ? finalQuery + " @subject:GENED " : finalQuery;
+    search(finalQuery);
+  }
 
   // Render courses incrementally in batches of 20 at a time, to avoid slowing
   // down the browser with too many elements at once.
   let showing = 0;
   let showingTimeout = 0;
+
   function showMore() {
     const len = $data?.courses?.length ?? 0;
     if (showing < len) {
@@ -79,6 +115,12 @@
           <QueryLink bind:query value={`@semester:"fall 2022"`} />, and
           <QueryLink bind:query value={`@level:{graduate}`} />.
         </p>
+        <p>
+          If you're looking for Gen Ed courses, add <QueryLink
+            bind:query
+            value={`gened`}
+          /> to your search.
+        </p>
       </div>
     {/if}
 
@@ -107,6 +149,21 @@
         irrelevant. WTF?</span
       >
     </p>
+
+    {#if genEdQuery}
+      <div class="flex text-sm mb-2">
+        <b>Filter by GENED tag:</b>
+        {#each genEdAreas as area, i}
+          <label class="flex mr-1 items-center"
+            ><input
+              class="mx-2 align-middle"
+              type="checkbox"
+              bind:checked={genEdChecks[i]}
+            />{area}</label
+          >
+        {/each}
+      </div>
+    {/if}
 
     {#if !landing}
       <label class="flex text-sm mb-2">
