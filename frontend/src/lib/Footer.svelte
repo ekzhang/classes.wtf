@@ -6,7 +6,7 @@
 </script>
 
 <p class="md:text-center md:mx-auto max-w-screen-sm">
-  Made by <a href="https://twitter.com/ekzhang1">@ekzhang1</a>
+  Made by <a href="mailto:classes-wtf@googlegroups.com">Harvard students</a>
   using
   <a href="https://go.dev"><img src={goLogo} alt="Go" class="pb-1 pt-0.5" /></a>
   and
