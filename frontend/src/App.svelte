@@ -59,8 +59,9 @@
       : "";
 
     // Add relevant year/gen-ed tags to query, if boxes checked.
-    finalQuery = (ay2024 ? "@academicYear:[2024 2024] " : "") + 
-      normalizeText(query) + 
+    finalQuery =
+      (ay2024 ? "@academicYear:[2024 2024] " : "") +
+      normalizeText(query) +
       (genEdQuery ? genEdSearchQuery : "");
 
     // If your query includes "gened", get only gen-ed classes.
