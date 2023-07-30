@@ -16,8 +16,8 @@ export type CourseData = {
   classSection: string;
   component: string;
   description: string;
-  genEdAreas: string[];
-  divisionalDistribution: string[];
+  genEdArea: string[];
+  divisionalDist: string[];
   instructors: {
     name: string;
     email: string;
