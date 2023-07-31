@@ -24,7 +24,7 @@ The frontend is a static website built with [Svelte](https://svelte.dev/), and i
 
 **Why are you using Redis?** It's really fast, it stores data in memory, the API is simple and robust, and it has a best-in-class full-text search module. For this size of dataset, embedding Redis gives you unmatched performance with a fraction of the cost and effort of alternatives.
 
-**Can you make this for my school?** The code is all open-source, and you're welcome to take a look or port it! If you're doing this please also consider reaching out on Twitter [@ekzhang1](https://twitter.com/ekzhang1) or by [email](mailto:ekzhang1@gmail.com), since I'd love to talk tech and expand this into a shared course database together.
+**Can you make this for my school?** The code is all open-source, and you're welcome to take a look or port it! If you're doing this please also consider reaching out on Twitter [@ekzhang1](https://twitter.com/ekzhang1) or by [email](mailto:ekzhang1@gmail.com), since I'd love to hear about your work.
 
 **Where is the data sourced?** The course catalog was indexed from publicly available course titles and descriptions online. See the code in the `datasource/` folder.
 
@@ -99,6 +99,6 @@ fly deploy
 
 ## Acknowledgements
 
-Created by Eric Zhang ([@ekzhang1](https://twitter.com/ekzhang1)). Licensed under the [MIT license](LICENSE).
+See the [contributors page](https://github.com/ekzhang/classes.wtf/graphs/contributors). Current maintainers can be reached by email at [classes-wtf@googlegroups.com](mailto:classes-wtf@googlegroups.com). Licensed under the [MIT license](LICENSE).
 
-Thanks to Raphael Kats for helping build scripts to explore and document data from the My.Harvard API. Numerous students helped advertise the site in college communities.
+Thanks to numerous students who helped advertise the site in college communities.
