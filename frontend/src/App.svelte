@@ -112,7 +112,7 @@
         <p>
           Filter by specific attributes like
           <QueryLink bind:query value={`@subject:compsci`} />,
-          <QueryLink bind:query value={`@semester:"fall 2022"`} />, and
+          <QueryLink bind:query value={`@semester:"fall 2023"`} />, and
           <QueryLink bind:query value={`@level:{graduate}`} />.
         </p>
         <p>
