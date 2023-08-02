@@ -16,8 +16,6 @@ export type CourseData = {
   classSection: string;
   component: string;
   description: string;
-  genEdArea: string[];
-  divisionalDist: string[];
   instructors: {
     name: string;
     email: string;
@@ -36,6 +34,7 @@ export type CourseData = {
     meetsOnSunday: boolean;
   }[];
   genEdArea: string[];
+  divisionalDist: string[];
 };
 
 type SearchResult = {
