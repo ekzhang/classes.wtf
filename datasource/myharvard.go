@@ -93,6 +93,7 @@ func (s *SearchMh) Fetch(page uint) (courses []Course, err error) {
 
 		genEdAreaRaw := obj["CRSE_ATTR_VALUE_HU_GE_ATTR"]
 		genEdArea := parseStringOrList(genEdAreaRaw)
+		removeAmpersandFromStrList(genEdArea)
 
 		divisionalDistRaw := obj["CRSE_ATTR_VALUE_HU_LDD_ATTR"]
 		divisonalDist := []string{}
