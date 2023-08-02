@@ -33,7 +33,7 @@
 </script>
 
 <div>
-  <div class="flex gap-2">
+  <div class="flex gap-8">
     <div class="flex-1">
       <h3 class="text-sm font-bold">
         <span title={data.subjectDescription}>{data.subject}</span>
@@ -55,7 +55,7 @@
     </div>
   </div>
   {#if data.genEdArea.length}
-    <div class="mb-2 sm:hidden">
+    <div class="mb-1.5 sm:hidden">
       <GenEdAreas value={data.genEdArea} />
     </div>
   {/if}
