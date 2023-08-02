@@ -166,7 +166,7 @@
     {/if}
 
     {#if !landing}
-      <label class="flex text-sm mb-2">
+      <label class="flex items-center text-sm mb-2">
         <input class="mr-2" type="checkbox" bind:checked={ay2024} />
         Only show AY 2023–2024 courses
       </label>
