@@ -78,6 +78,36 @@ func main() {
 		}
 		log.Printf("wrote %d courses to data/courses.json", len(courses))
 
+	case "split":
+		splitCmd := flag.NewFlagSet("split", flag.ExitOnError)
+		splitCmd.Parse(os.Args[2:])
+
+		filename := "data/courses.json"
+
+		log.Printf("parsing combined course data from %s", filename)
+		file, err := os.Open(filename)
+		if err != nil {
+			log.Fatalf("failed to open %s: %v", filename, err)
+		}
+		var courses []datasource.Course
+		if err = json.NewDecoder(file).Decode(&courses); err != nil {
+			log.Fatalf("failed to parse %s: %v", filename, err)
+		}
+
+		log.Printf("got %d courses; splitting by year", len(courses))
+		coursesByYear := make(map[uint32][]datasource.Course)
+		for _, course := range courses {
+			coursesByYear[course.AcademicYear] = append(coursesByYear[course.AcademicYear], course)
+		}
+		for year, yearCourses := range coursesByYear {
+			filename := fmt.Sprintf("data/courses-%d.json", year)
+			log.Printf("writing %d courses to %s", len(yearCourses), filename)
+			yearCoursesJson, _ := json.Marshal(yearCourses)
+			if err := os.WriteFile(filename, yearCoursesJson, 0644); err != nil {
+				log.Fatalf("failed to write %s: %v", filename, err)
+			}
+		}
+
 	case "server":
 		serverCmd := flag.NewFlagSet("server", flag.ExitOnError)
 		data := serverCmd.String("data", "", "path or url for the data file")
