@@ -99,14 +99,18 @@ func main() {
 		for _, course := range courses {
 			coursesByYear[course.AcademicYear] = append(coursesByYear[course.AcademicYear], course)
 		}
+
+		log.Printf("writing")
 		for year, yearCourses := range coursesByYear {
 			filename := fmt.Sprintf("data/courses-%d.json", year)
-			log.Printf("writing %d courses to %s", len(yearCourses), filename)
+			log.Printf("  - %s  [len: %d]", filename, len(yearCourses))
 			yearCoursesJson, _ := json.Marshal(yearCourses)
 			if err := os.WriteFile(filename, yearCoursesJson, 0644); err != nil {
 				log.Fatalf("failed to write %s: %v", filename, err)
 			}
 		}
+
+		log.Printf("wrote %d courses", len(courses))
 
 	case "server":
 		serverCmd := flag.NewFlagSet("server", flag.ExitOnError)
