@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 
 	"classes.wtf/datasource"
 	"classes.wtf/server"
@@ -99,10 +100,16 @@ func main() {
 		for _, course := range courses {
 			coursesByYear[course.AcademicYear] = append(coursesByYear[course.AcademicYear], course)
 		}
+		years := make([]uint32, 0, len(coursesByYear))
+		for year := range coursesByYear {
+			years = append(years, year)
+		}
+		sort.Slice(years, func(i, j int) bool { return years[i] < years[j] })
 
 		log.Printf("writing")
-		for year, yearCourses := range coursesByYear {
+		for _, year := range years {
 			filename := fmt.Sprintf("data/courses-%d.json", year)
+			yearCourses := coursesByYear[year]
 			log.Printf("  - %s  [len: %d]", filename, len(yearCourses))
 			yearCoursesJson, _ := json.Marshal(yearCourses)
 			if err := os.WriteFile(filename, yearCoursesJson, 0644); err != nil {
