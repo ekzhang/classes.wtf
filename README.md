@@ -60,6 +60,12 @@ go run . combine
 
 This looks for all files named `data/courses-{year}.json` and merges them.
 
+You can also do the inverse, splitting a single `data/courses.json` into multiple `data/courses-{year}.json`.
+
+```bash
+go run . split
+```
+
 ### Running the server
 
 The server listens for web requests on port 7500. (It also spawns a Redis instance, using Docker, on port 7501.)
