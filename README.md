@@ -105,6 +105,6 @@ fly deploy
 
 ## Acknowledgements
 
-See the [contributors page](https://github.com/ekzhang/classes.wtf/graphs/contributors). Current maintainers can be reached by email at [classes-wtf@googlegroups.com](mailto:classes-wtf@googlegroups.com). Licensed under the [MIT license](LICENSE).
+See the [contributors page](https://github.com/ekzhang/classes.wtf/graphs/contributors). Current maintainers can be reached by email at [wtf@classes.wtf](mailto:wtf@classes.wtf). Licensed under the [MIT license](LICENSE).
 
 Thanks to numerous students who helped advertise the site in college communities.
