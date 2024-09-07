@@ -120,7 +120,7 @@ func Run(uri string, static string, local bool) {
 	if local {
 		exec.Command("docker", "kill", "classes.wtf-redis").Run()
 		proc = exec.Command("docker", "run", "--name", "classes.wtf-redis",
-			"-i", "--rm", "-p", "7501:6379", "redis/redis-stack-server:latest",
+			"-i", "--rm", "-p", "7501:6379", "redis/redis-stack-server:7.0.6-RC8",
 			"redis-stack-server", "--save", "")
 	} else {
 		proc = exec.Command("redis-server",

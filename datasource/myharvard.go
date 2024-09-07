@@ -179,6 +179,8 @@ func (s *SearchMh) request(page uint) (props map[string]any, results map[string]
 // Example: 2024 selects Fall 2023 and Spring 2024.
 func mhGetYearFilter(year int) (yearFilter string, err error) {
 	switch year {
+	case 2025:
+		yearFilter = `(STRM:"2248" | STRM:"2252")`
 	case 2024:
 		yearFilter = `(STRM:"2238" | STRM:"2242")`
 	case 2023:

@@ -27,7 +27,7 @@
   let landing = query === "";
   $: if (query) landing = false;
 
-  let ay2024 = true;
+  let currentYear = true;
   let genEdChecks: boolean[] = new Array(4).fill(false);
   let genEdAreas: string[] = ["HSI", "STS", "EC", "AC"];
 
@@ -60,7 +60,7 @@
 
     // Add relevant year/gen-ed tags to query, if boxes checked.
     finalQuery =
-      (ay2024 ? "@academicYear:[2024 2024] " : "") +
+      (currentYear ? "@academicYear:[2025 2025] " : "") +
       normalizeText(query) +
       (genEdQuery ? genEdSearchQuery : "");
 
@@ -112,7 +112,7 @@
         <p>
           Filter by specific attributes like
           <QueryLink bind:query value={`@subject:compsci`} />,
-          <QueryLink bind:query value={`@semester:"fall 2023"`} />, and
+          <QueryLink bind:query value={`@semester:"fall 2024"`} />, and
           <QueryLink bind:query value={`@level:{graduate}`} />.
         </p>
         <p>
@@ -167,8 +167,8 @@
 
     {#if !landing}
       <label class="flex items-center text-sm mb-2">
-        <input class="mr-2" type="checkbox" bind:checked={ay2024} />
-        Only show AY 2023–2024 courses
+        <input class="mr-2" type="checkbox" bind:checked={currentYear} />
+        Only show AY 2024–2025 courses
       </label>
     {/if}
 
