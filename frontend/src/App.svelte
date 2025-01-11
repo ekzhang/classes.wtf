@@ -15,6 +15,7 @@
   import Footer from "./lib/Footer.svelte";
   import QueryLink from "./lib/QueryLink.svelte";
   import { createSearcher, normalizeText } from "./lib/search";
+  import { fly, scale } from "svelte/transition";
 
   let query: string = location.hash ? decodeQueryHash(location.hash) : "";
   $: {
@@ -88,6 +89,8 @@
       showMore();
     })
   );
+
+  let openCsStudentAd = false;
 </script>
 
 <main class="px-4 py-8 max-w-screen-md mx-auto" class:landing>
@@ -195,6 +198,49 @@
     </div>
   {/if}
 </main>
+
+<aside class="hidden md:block fixed bottom-0 right-0 p-4">
+  <button
+    class="border px-4 py-2 rounded-lg shadow-md hover:border-sky-500 hover:bg-sky-50 hover:text-sky-900 active:scale-105 active:shadow-lg transition-all"
+    on:click={() => (openCsStudentAd = true)}
+  >
+    <span class="mr-1">👋</span> For CS students</button
+  >
+</aside>
+
+{#if openCsStudentAd}
+  <section
+    class="hidden md:block fixed inset-0 bg-gradient-to-br from-amber-50/80 to-red-100/80 backdrop-blur-sm overflow-auto"
+    in:fly={{ x: 100 }}
+    out:fly={{ x: -100 }}
+  >
+    <div class="text-2xl p-8 max-w-screen-md">
+      <h2 class="font-bold mb-6">Hi from Eric!</h2>
+      <p class="mb-6">
+        Welcome to <em>classes.wtf</em>. If you're seeing this, I hope you're
+        having a great day! (And that Harvard is a transformative experience
+        rather than eating your soul. :D)
+      </p>
+      <p class="mb-6">
+        I made this site in 2022 as an easy way to get information about
+        classes. Just that, and nothing else. It spreads through word-of-mouth
+        between friends, PAFs, dorm lists, classmates…
+      </p>
+      <p class="mb-6">
+        Right now we're looking for maintainers! Before each semester we need to
+        update the course catalog and share the site with students, but you can
+        also explore new features. If you're interested, please reach me at <a
+          class="underline"
+          href="mailto:ekzhang1@gmail.com">ekzhang1@gmail.com</a
+        >.
+      </p>
+      <button
+        class="px-5 py-3 rounded-lg border border-black hover:shadow-md active:scale-105 transition-all"
+        on:click={() => (openCsStudentAd = false)}>Okay, got it!</button
+      >
+    </div>
+  </section>
+{/if}
 
 <style lang="postcss">
   @screen md {
