@@ -40,7 +40,7 @@ This loads data from Curricle for academic terms before Spring 2022 (AY 2022) an
 go run . download -year 2019  # -> data/courses-2019.json
 go run . download -year 2020  # -> data/courses-2020.json
 # ... and so on
-go run . download -year 2025  # -> data/courses-2025.json
+go run . download -year 2026  # -> data/courses-2026.json
 ```
 
 Unfortunately, My.Harvard does not allow you to view courses from previous academic years, so years between 2023 and the current one will probably not return any data. For those, you can download the appropriate preloaded datasets from our [public S3 bucket](https://s3.amazonaws.com/classes.wtf).

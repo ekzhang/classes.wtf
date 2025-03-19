@@ -61,7 +61,7 @@
 
     // Add relevant year/gen-ed tags to query, if boxes checked.
     finalQuery =
-      (currentYear ? "@academicYear:[2025 2025] " : "") +
+      (currentYear ? "@academicYear:[2026 2026] " : "") +
       normalizeText(query) +
       (genEdQuery ? genEdSearchQuery : "");
 
@@ -171,7 +171,7 @@
     {#if !landing}
       <label class="flex items-center text-sm mb-2">
         <input class="mr-2" type="checkbox" bind:checked={currentYear} />
-        Only show AY 2024–2025 courses
+        Only show AY 2025–2026 courses
       </label>
     {/if}
 
